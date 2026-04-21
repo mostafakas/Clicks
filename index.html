@@ -3,32 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="متجر TechZone للإلكترونيات - أفضل عروض اللابتوبات، الموبايلات، وتجميعات الـ PC">
     <title>TechZone | متجر الإلكترونيات الأول</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
+    <div class="top-bar">
+        <div class="contact-info">
+            <span><i class="fas fa-phone-alt"></i> 19000</span>
+            <span><i class="fas fa-envelope"></i> support@techzone.com</span>
+        </div>
+        <div class="lang-switch">
+            <a href="#">English</a> | <span>عربي</span>
+        </div>
+    </div>
 
     <header>
         <div class="logo">
             <h2>Tech<span>Zone</span></h2>
         </div>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="ابحث عن لابتوب، موبايل، أو أي جهاز ذكي...">
-            <button onclick="searchProducts()"><i class="fas fa-search"></i></button>
+            <input type="text" placeholder="ابحث عن لابتوب، موبايل، أو أي جهاز ذكي...">
+            <button><i class="fas fa-search"></i></button>
         </div>
         <div class="user-actions">
-            <a href="#"><i class="fas fa-user"></i> دخول</a>
+            <a href="#"><i class="fas fa-user"></i> حسابي</a>
             <a href="#"><i class="fas fa-heart"></i> المفضلة</a>
-            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge" id="cartBadge">0</span></a>
+            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge">0</span></a>
         </div>
     </header>
 
     <nav class="categories">
         <ul>
-            <li><a href="#"><i class="fas fa-laptop"></i> لابتوبات</a></li>
-            <li><a href="#"><i class="fas fa-desktop"></i> كمبيوترات</a></li>
+            <li class="has-dropdown">
+                <a href="#"><i class="fas fa-laptop"></i> لابتوبات <i class="fas fa-chevron-down text-small"></i></a>
+                <div class="mega-menu">
+                    <div class="mega-column">
+                        <h4>حسب الاستخدام</h4>
+                        <a href="#">Gaming</a>
+                        <a href="#">Business</a>
+                        <a href="#">Student</a>
+                    </div>
+                    <div class="mega-column">
+                        <h4>حسب الماركة</h4>
+                        <a href="#">Apple MacBook</a>
+                        <a href="#">Dell</a>
+                        <a href="#">HP</a>
+                    </div>
+                </div>
+            </li>
+            <li><a href="#"><i class="fas fa-desktop"></i> كمبيوترات و PC</a></li>
             <li><a href="#"><i class="fas fa-mobile-alt"></i> موبايلات</a></li>
             <li><a href="#"><i class="fas fa-headphones"></i> إكسسوارات</a></li>
             <li><a href="#"><i class="fas fa-gamepad"></i> Gaming Zone</a></li>
@@ -40,92 +67,50 @@
         <div class="hero-content">
             <h1>🔥 عروض اللابتوبات تصل إلى 25%</h1>
             <p>اشتري الآن بالتقسيط المريح وبدون فوائد، وشحن مجاني للطلبات فوق 5000 جنيه!</p>
-            <button class="btn-primary">تسوق الآن</button>
+            <div class="hero-buttons">
+                <button class="btn-primary">تسوق الآن</button>
+                <button class="btn-outline">تصفح العروض</button>
+            </div>
         </div>
+    </section>
+
+    <section class="quick-categories">
+        <div class="cat-box"><i class="fas fa-laptop-code"></i><span>لابتوبات</span></div>
+        <div class="cat-box"><i class="fas fa-mobile"></i><span>موبايلات</span></div>
+        <div class="cat-box"><i class="fas fa-microchip"></i><span>قطع غيار</span></div>
+        <div class="cat-box"><i class="fas fa-headset"></i><span>إكسسوارات</span></div>
+        <div class="cat-box"><i class="fas fa-tools"></i><span>صيانة</span></div>
     </section>
 
     <section class="products-section">
-        <h3 class="section-title">أفضل العروض</h3>
-        <div class="products-grid" id="products-container">
-            <p style="text-align: center; width: 100%;">جاري تحميل المنتجات...</p>
+        <div class="section-header">
+            <h3 class="section-title">أفضل العروض</h3>
+            <a href="#" class="view-all">عرض الكل <i class="fas fa-arrow-left"></i></a>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <div class="product-card">
+                <div class="discount-badge">-12%</div>
+                <img src="https://via.placeholder.com/200" alt="لابتوب جيمنج">
+                <h4>لابتوب جيمنج ASUS ROG Strix</h4>
+                <div class="product-meta">
+                    <span class="brand">ASUS</span>
+                    <div class="stars"><i class="fas fa-star"></i> 4.8</div>
+                </div>
+                <div class="price">
+                    <span class="new-price">35,000 ج.م</span>
+                    <span class="old-price">40,000 ج.م</span>
+                </div>
+                <div class="card-actions">
+                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+                    <button class="add-to-fav"><i class="far fa-heart"></i></button>
+                </div>
+            </div>
         </div>
     </section>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <a href="https://wa.me/1234567890" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
-            authDomain: "clicks-f7ce3.firebaseapp.com",
-            projectId: "clicks-f7ce3",
-            storageBucket: "clicks-f7ce3.firebasestorage.app",
-            messagingSenderId: "628318172493",
-            appId: "1:628318172493:web:e5437bde78399b6fbaf304",
-            measurementId: "G-L7Q6Q16ZH4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // متغير لحفظ عدد المنتجات في السلة
-        let cartCount = 0;
-
-        // دالة عرض المنتجات
-        async function displayProducts() {
-            const container = document.getElementById('products-container');
-            try {
-                const querySnapshot = await getDocs(collection(db, "products"));
-                container.innerHTML = ""; // مسح رسالة التحميل
-
-                if (querySnapshot.empty) {
-                    container.innerHTML = "<p>لا توجد منتجات حالياً.</p>";
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    const product = doc.data();
-                    container.innerHTML += `
-                        <div class="product-card">
-                            <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}">
-                            <h4>${product.name}</h4>
-                            <div class="price">
-                                <span class="new-price">${product.price} جنيه</span>
-                            </div>
-                            <button class="add-to-cart" data-id="${doc.id}">
-                                <i class="fas fa-cart-plus"></i> أضف للسلة
-                            </button>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                console.error("خطأ في جلب المنتجات: ", error);
-                container.innerHTML = "<p>حدث خطأ أثناء تحميل المنتجات.</p>";
-            }
-        }
-
-        // تشغيل دالة العرض
-        displayProducts();
-
-        // برمجة زر "أضف للسلة" ليعمل أوتوماتيكياً مع المنتجات الجديدة
-        document.getElementById('products-container').addEventListener('click', function(e) {
-            // التأكد أن الضغطة كانت على زر إضافة للسلة
-            if (e.target.classList.contains('add-to-cart') || e.target.closest('.add-to-cart')) {
-                cartCount++;
-                document.getElementById('cartBadge').innerText = cartCount;
-                
-                // تغيير شكل الزر لحظياً لتأكيد الإضافة
-                const btn = e.target.closest('.add-to-cart') || e.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
-                btn.style.backgroundColor = '#28a745';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.backgroundColor = ''; // يرجع للونه الأصلي في CSS
-                }, 1500);
-            }
-        });
-    </script>
-</body>
+    </body>
 </html>
