@@ -46,8 +46,9 @@
 
     <section class="products-section">
         <h3 class="section-title">أفضل العروض</h3>
-        <div class="products-grid">
-            <div class="product-card">
+<div class="products-grid" id="products-container">
+    </div>
+        <div class="product-card">
                 <img src="https://via.placeholder.com/200" alt="لابتوب جيمنج">
                 <h4>لابتوب جيمنج ASUS ROG</h4>
                 <div class="price">
@@ -77,41 +78,46 @@
         </div>
     </section>
     <script type="module">
-      // استيراد الدوال اللازمة من جوجل
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    
-      // كود الربط الخاص بك (الذي ظهر لك في الصورة)
-      const firebaseConfig = {
-        apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
-        authDomain: "clicks-f7ce3.firebaseapp.com",
-        projectId: "clicks-f7ce3",
-        storageBucket: "clicks-f7ce3.firebasestorage.app",
-        messagingSenderId: "628318172493",
-        appId: "1:628318172493:web:e5437bde78399b6fbaf304",
-        measurementId: "G-L7Q6Q16ZH4"
-      };
-    
-      // تشغيل الفايربيز
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-    
-      console.log("تم اتصال الموقع بفايربيز بنجاح! 🚀");
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // استيراد دوال القراءة
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  const firebaseConfig = {
+    // ... (حط إعداداتك هنا زي ما هي) ...
+    apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
+    authDomain: "clicks-f7ce3.firebaseapp.com",
+    projectId: "clicks-f7ce3",
+    storageBucket: "clicks-f7ce3.firebasestorage.app",
+    messagingSenderId: "628318172493",
+    appId: "1:628318172493:web:e5437bde78399b6fbaf304",
+    measurementId: "G-L7Q6Q16ZH4"
+  };
 
-// دالة لجلب المنتجات من المخزن
-async function getProducts() {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function displayProducts() {
+    const container = document.getElementById('products-container');
     const querySnapshot = await getDocs(collection(db, "products"));
-    querySnapshot.forEach((doc) => {
-        console.log("المنتج اللي في المخزن هو: ", doc.data().name);
-        // هنا ممكن نكتب كود يظهر المنتج في الصفحة مباشرة
-    });
-}
+    
+    container.innerHTML = ""; // نمسح أي حاجة قديمة
 
-// تشغيل الدالة
-getProducts();
-    </script>
+    querySnapshot.forEach((doc) => {
+        const product = doc.data();
+        // بنبني شكل الكارت بالـ HTML
+        container.innerHTML += `
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="${product.name}">
+                <h4>${product.name}</h4>
+                <div class="price">
+                    <span class="new-price">${product.price} جنيه</span>
+                </div>
+                <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+            </div>
+        `;
+    });
+  }
+
+  displayProducts();
+</script>
 </body>
 </html>
