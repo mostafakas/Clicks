@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم | TechZone Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container { padding: 50px; max-width: 800px; margin: auto; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn-add { background-color: #007bff; color: white; border: none; padding: 15px 30px; cursor: pointer; width: 100%; font-size: 18px; border-radius: 5px; }
+        .btn-add:hover { background-color: #0056b3; }
+        .status-msg { margin-top: 20px; padding: 10px; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><h2>Tech<span>Zone</span> Admin</h2></div>
+        <a href="index.html" style="color: white; text-decoration: none;">العودة للمتجر</a>
+    </header>
+
+    <div class="admin-container">
+        <h1>إضافة منتج جديد للمتجر</h1>
+        <br>
+        <div id="status" class="status-msg"></div>
+
+        <div class="form-group">
+            <label>اسم المنتج</label>
+            <input type="text" id="prodName" placeholder="مثلاً: HP Victus 15">
+        </div>
+
+        <div class="form-group">
+            <label>السعر (جنيه)</label>
+            <input type="number" id="prodPrice" placeholder="مثلاً: 35000">
+        </div>
+
+        <div class="form-group">
+            <label>القسم</label>
+            <select id="prodCategory">
+                <option value="Laptops">لابتوبات</option>
+                <option value="Mobiles">موبايلات</option>
+                <option value="PC">كمبيوترات</option>
+                <option value="Accessories">إكسسوارات</option>
+                <option value="Gaming">Gaming Zone</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>رابط صورة المنتج (URL)</label>
+            <input type="text" id="prodImage" placeholder="ضع رابط صورة المنتج هنا">
+        </div>
+
+        <button class="btn-add" id="saveBtn">نشر المنتج في المتجر 🚀</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // نفس إعداداتك اللي استخدمناها في index.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
+            authDomain: "clicks-f7ce3.firebaseapp.com",
+            projectId: "clicks-f7ce3",
+            storageBucket: "clicks-f7ce3.firebasestorage.app",
+            messagingSenderId: "628318172493",
+            appId: "1:628318172493:web:e5437bde78399b6fbaf304",
+            measurementId: "G-L7Q6Q16ZH4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const saveBtn = document.getElementById('saveBtn');
+        const status = document.getElementById('status');
+
+        saveBtn.addEventListener('click', async () => {
+            const name = document.getElementById('prodName').value;
+            const price = document.getElementById('prodPrice').value;
+            const category = document.getElementById('prodCategory').value;
+            const image = document.getElementById('prodImage').value;
+
+            if(!name || !price || !image) {
+                alert("برجاء ملء جميع البيانات");
+                return;
+            }
+
+            saveBtn.innerText = "جاري الحفظ...";
+            saveBtn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "products"), {
+                    name: name,
+                    price: Number(price),
+                    category: category,
+                    image: image,
+                    createdAt: new Date()
+                });
+
+                status.style.display = "block";
+                status.style.backgroundColor = "#d4edda";
+                status.innerText = "تمت إضافة المنتج بنجاح! سيظهر في الصفحة الرئيسية الآن.";
+                
+                // مسح الخانات
+                document.getElementById('prodName').value = "";
+                document.getElementById('prodPrice').value = "";
+                document.getElementById('prodImage').value = "";
+                
+            } catch (e) {
+                console.error("Error: ", e);
+                status.style.display = "block";
+                status.style.backgroundColor = "#f8d7da";
+                status.innerText = "حدث خطأ أثناء الحفظ.";
+            } finally {
+                saveBtn.innerText = "نشر المنتج في المتجر 🚀";
+                saveBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
