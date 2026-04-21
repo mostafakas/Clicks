@@ -15,13 +15,13 @@
             <h2>Tech<span>Zone</span></h2>
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="ابحث عن لابتوب، موبايل، أو أي جهاز ذكي...">
-            <button><i class="fas fa-search"></i></button>
+            <input type="text" id="searchInput" placeholder="ابحث عن لابتوب، موبايل، أو أي جهاز ذكي...">
+            <button onclick="searchProducts()"><i class="fas fa-search"></i></button>
         </div>
         <div class="user-actions">
             <a href="#"><i class="fas fa-user"></i> دخول</a>
             <a href="#"><i class="fas fa-heart"></i> المفضلة</a>
-            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge">0</span></a>
+            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge" id="cartBadge">0</span></a>
         </div>
     </header>
 
@@ -46,78 +46,86 @@
 
     <section class="products-section">
         <h3 class="section-title">أفضل العروض</h3>
-<div class="products-grid" id="products-container">
-    </div>
-        <div class="product-card">
-                <img src="https://via.placeholder.com/200" alt="لابتوب جيمنج">
-                <h4>لابتوب جيمنج ASUS ROG</h4>
-                <div class="price">
-                    <span class="new-price">35,000 جنيه</span>
-                    <span class="old-price">40,000 جنيه</span>
-                </div>
-                <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-            </div>
-            
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200" alt="ايفون">
-                <h4>Apple iPhone 14 Pro</h4>
-                <div class="price">
-                    <span class="new-price">45,000 جنيه</span>
-                </div>
-                <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-            </div>
-            
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200" alt="سماعة">
-                <h4>سماعة رأس Sony WH-1000XM4</h4>
-                <div class="price">
-                    <span class="new-price">9,500 جنيه</span>
-                </div>
-                <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-            </div>
+        <div class="products-grid" id="products-container">
+            <p style="text-align: center; width: 100%;">جاري تحميل المنتجات...</p>
         </div>
     </section>
+
     <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    // ... (حط إعداداتك هنا زي ما هي) ...
-    apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
-    authDomain: "clicks-f7ce3.firebaseapp.com",
-    projectId: "clicks-f7ce3",
-    storageBucket: "clicks-f7ce3.firebasestorage.app",
-    messagingSenderId: "628318172493",
-    appId: "1:628318172493:web:e5437bde78399b6fbaf304",
-    measurementId: "G-L7Q6Q16ZH4"
-  };
+        const firebaseConfig = {
+            apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
+            authDomain: "clicks-f7ce3.firebaseapp.com",
+            projectId: "clicks-f7ce3",
+            storageBucket: "clicks-f7ce3.firebasestorage.app",
+            messagingSenderId: "628318172493",
+            appId: "1:628318172493:web:e5437bde78399b6fbaf304",
+            measurementId: "G-L7Q6Q16ZH4"
+        };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-  async function displayProducts() {
-    const container = document.getElementById('products-container');
-    const querySnapshot = await getDocs(collection(db, "products"));
-    
-    container.innerHTML = ""; // نمسح أي حاجة قديمة
+        // متغير لحفظ عدد المنتجات في السلة
+        let cartCount = 0;
 
-    querySnapshot.forEach((doc) => {
-        const product = doc.data();
-        // بنبني شكل الكارت بالـ HTML
-        container.innerHTML += `
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200" alt="${product.name}">
-                <h4>${product.name}</h4>
-                <div class="price">
-                    <span class="new-price">${product.price} جنيه</span>
-                </div>
-                <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-            </div>
-        `;
-    });
-  }
+        // دالة عرض المنتجات
+        async function displayProducts() {
+            const container = document.getElementById('products-container');
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                container.innerHTML = ""; // مسح رسالة التحميل
 
-  displayProducts();
-</script>
+                if (querySnapshot.empty) {
+                    container.innerHTML = "<p>لا توجد منتجات حالياً.</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    container.innerHTML += `
+                        <div class="product-card">
+                            <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}">
+                            <h4>${product.name}</h4>
+                            <div class="price">
+                                <span class="new-price">${product.price} جنيه</span>
+                            </div>
+                            <button class="add-to-cart" data-id="${doc.id}">
+                                <i class="fas fa-cart-plus"></i> أضف للسلة
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("خطأ في جلب المنتجات: ", error);
+                container.innerHTML = "<p>حدث خطأ أثناء تحميل المنتجات.</p>";
+            }
+        }
+
+        // تشغيل دالة العرض
+        displayProducts();
+
+        // برمجة زر "أضف للسلة" ليعمل أوتوماتيكياً مع المنتجات الجديدة
+        document.getElementById('products-container').addEventListener('click', function(e) {
+            // التأكد أن الضغطة كانت على زر إضافة للسلة
+            if (e.target.classList.contains('add-to-cart') || e.target.closest('.add-to-cart')) {
+                cartCount++;
+                document.getElementById('cartBadge').innerText = cartCount;
+                
+                // تغيير شكل الزر لحظياً لتأكيد الإضافة
+                const btn = e.target.closest('.add-to-cart') || e.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
+                btn.style.backgroundColor = '#28a745';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = ''; // يرجع للونه الأصلي في CSS
+                }, 1500);
+            }
+        });
+    </script>
 </body>
 </html>
