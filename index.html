@@ -76,6 +76,42 @@
             </div>
         </div>
     </section>
+    <script type="module">
+      // استيراد الدوال اللازمة من جوجل
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    
+      // كود الربط الخاص بك (الذي ظهر لك في الصورة)
+      const firebaseConfig = {
+        apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
+        authDomain: "clicks-f7ce3.firebaseapp.com",
+        projectId: "clicks-f7ce3",
+        storageBucket: "clicks-f7ce3.firebasestorage.app",
+        messagingSenderId: "628318172493",
+        appId: "1:628318172493:web:e5437bde78399b6fbaf304",
+        measurementId: "G-L7Q6Q16ZH4"
+      };
+    
+      // تشغيل الفايربيز
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+    
+      console.log("تم اتصال الموقع بفايربيز بنجاح! 🚀");
 
+        // استيراد دوال القراءة
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// دالة لجلب المنتجات من المخزن
+async function getProducts() {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    querySnapshot.forEach((doc) => {
+        console.log("المنتج اللي في المخزن هو: ", doc.data().name);
+        // هنا ممكن نكتب كود يظهر المنتج في الصفحة مباشرة
+    });
+}
+
+// تشغيل الدالة
+getProducts();
+    </script>
 </body>
 </html>
