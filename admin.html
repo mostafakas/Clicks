@@ -3,96 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم Clicks | الاحترافية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>لوحة تحكم Clicks Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #007bff; --secondary: #6c757d; --dark: #1a1d20; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --bg: #f4f7f6; }
+        :root { 
+            --primary: #0061f2; --secondary: #69707a; --success: #10b981; 
+            --info: #36b9cc; --warning: #f6e05e; --danger: #ef4444; 
+            --dark: #1f2937; --light: #f9fafb; --white: #ffffff;
+        }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg); display: flex; color: #333; min-height: 100vh; }
+        body { background-color: #f2f5f9; display: flex; color: var(--dark); min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--dark); color: white; padding: 25px; position: fixed; right: 0; height: 100vh; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-        .sidebar h2 { color: var(--primary); text-align: center; margin-bottom: 40px; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
-        .sidebar h2 span { color: white; }
-        .sidebar a { color: #adb5bd; text-decoration: none; display: flex; align-items: center; padding: 14px 18px; margin-bottom: 10px; border-radius: 12px; transition: 0.3s; font-weight: 600; }
-        .sidebar a:hover, .sidebar a.active { background: var(--primary); color: white; transform: translateX(-5px); }
-        .sidebar a i { margin-left: 15px; font-size: 20px; }
+        .sidebar { width: 280px; background: var(--dark); color: var(--white); padding: 30px 20px; position: fixed; right: 0; height: 100vh; z-index: 1000; }
+        .sidebar-brand { text-align: center; font-size: 30px; font-weight: 800; margin-bottom: 40px; color: var(--primary); }
+        .sidebar-brand span { color: var(--white); }
+        .sidebar a { 
+            color: #d1d5db; text-decoration: none; display: flex; align-items: center; 
+            padding: 14px 20px; margin-bottom: 8px; border-radius: 12px; transition: 0.3s; font-weight: 600; 
+        }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.1); color: var(--white); }
+        .sidebar a.active { background: var(--primary); box-shadow: 0 4px 15px rgba(0,97,242,0.4); }
+        .sidebar a i { margin-left: 15px; font-size: 18px; width: 25px; text-align: center; }
 
         /* Main Content */
         .main-content { flex: 1; margin-right: 280px; padding: 40px; width: calc(100% - 280px); }
-        .section-title { font-size: 26px; font-weight: 700; color: var(--dark); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        
-        /* Cards & Professional Form */
-        .card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; border: 1px solid #eee; margin-bottom: 30px; }
-        .form-section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin: 25px 0 15px; border-right: 4px solid var(--primary); padding-right: 15px; background: #f8fbff; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0; }
-        
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; font-weight: 800; color: var(--dark); }
+
+        /* Professional Tabs */
+        .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; background: #e2e8f0; padding: 6px; border-radius: 15px; width: fit-content; }
+        .tab-pill { 
+            border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; 
+            font-weight: 700; transition: 0.3s; background: transparent; color: var(--secondary); 
+        }
+        .tab-pill.active { background: var(--white); color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Cards */
+        .card { background: var(--white); border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; border: 1px solid #e5e7eb; margin-bottom: 25px; }
+        .form-title { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-title::after { content: ""; flex: 1; height: 1px; background: #e5e7eb; }
+
+        /* Form Grid */
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group { margin-bottom: 15px; }
         .full-width { grid-column: span 3; }
-        .double-width { grid-column: span 2; }
-        
-        label { font-weight: 700; font-size: 14px; color: #555; }
-        input, select, textarea { padding: 12px 15px; border: 1.5px solid #e0e0e0; border-radius: 10px; outline: none; transition: 0.3s; font-size: 15px; background: #fafafa; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(0,123,255,0.1); }
+        label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #4b5563; }
+        input, select, textarea { 
+            width: 100%; padding: 12px 16px; border: 1.5px solid #d1d5db; border-radius: 10px; 
+            outline: none; transition: 0.3s; font-size: 15px; background: #fcfcfc; 
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 4px rgba(0,97,242,0.1); }
 
-        /* Stock Controls */
-        .stock-control { display: flex; align-items: center; gap: 10px; justify-content: center; }
-        .btn-stock { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: 0.2s; }
-        .btn-plus { background: #e8f5e9; color: var(--success); }
-        .btn-minus { background: #ffebee; color: var(--danger); }
-        .btn-plus:hover { background: var(--success); color: white; }
-        .btn-minus:hover { background: var(--danger); color: white; }
+        /* Tables */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f9fafb; padding: 15px; text-align: center; color: #6b7280; font-weight: 700; border-bottom: 2px solid #edf2f7; }
+        td { padding: 15px; text-align: center; border-bottom: 1px solid #edf2f7; font-size: 15px; }
+        .product-img-table { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
 
-        /* Buttons */
-        .btn-main { background: var(--primary); color: white; border: none; padding: 16px 30px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: 700; width: 100%; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
-        .btn-main:hover { background: #0056b3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,123,255,0.3); }
+        /* Buttons Styles */
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+            padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; 
+            transition: 0.3s; border: none; font-size: 15px;
+        }
+        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 15px; }
+        .btn-primary:hover { background: #0052cc; transform: translateY(-2px); }
+        .btn-action { padding: 8px 12px; font-size: 14px; }
+        .btn-edit { background: #eff6ff; color: var(--primary); }
+        .btn-delete { background: #fef2f2; color: var(--danger); }
+        .btn-edit:hover { background: var(--primary); color: white; }
+        .btn-delete:hover { background: var(--danger); color: white; }
 
-        /* Warehouse Table */
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        th { padding: 15px; color: #777; font-weight: 700; border-bottom: 2px solid #eee; }
-        td { padding: 15px; background: white; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
-        tr td:first-child { border-radius: 0 12px 12px 0; border-right: 1px solid #f0f0f0; }
-        tr td:last-child { border-radius: 12px 0 0 12px; border-left: 1px solid #f0f0f0; }
+        /* Direct Stock Input */
+        .stock-input { width: 70px; text-align: center; padding: 5px; border-radius: 6px; border: 1px solid #d1d5db; font-weight: bold; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(5px); justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 85%; max-width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 25px; padding: 35px; position: relative; }
-        
-        .badge-stock { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .bg-low { background: #fff3e0; color: #ef6c00; }
-        .bg-ok { background: #e8f5e9; color: #2e7d32; }
+        /* Modal Pop-up */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(31, 41, 55, 0.7); z-index: 2000; backdrop-filter: blur(4px); 
+            justify-content: center; align-items: center; 
+        }
+        .modal-content { 
+            background: var(--white); width: 90%; max-width: 850px; max-height: 90vh; 
+            overflow-y: auto; border-radius: 24px; padding: 40px; position: relative; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+        .close-modal { position: absolute; left: 25px; top: 25px; font-size: 24px; cursor: pointer; color: var(--secondary); }
 
-        .upload-placeholder { border: 2px dashed #ccc; border-radius: 15px; padding: 30px; text-align: center; cursor: pointer; background: #fdfdfd; transition: 0.3s; }
-        .upload-placeholder:hover { border-color: var(--primary); background: #f0f7ff; }
-        .preview-img { max-width: 120px; border-radius: 10px; margin-top: 10px; display: none; }
+        /* Upload Area */
+        .upload-box { 
+            border: 2px dashed #d1d5db; border-radius: 15px; padding: 25px; 
+            text-align: center; cursor: pointer; transition: 0.3s; 
+        }
+        .upload-box:hover { border-color: var(--primary); background: #f0f7ff; }
+        .preview-img { max-width: 100px; max-height: 100px; margin-top: 15px; border-radius: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>Cli<span>cks</span></h2>
-        <a href="#" class="active" onclick="showSection('addSection', this)"><i class="fas fa-plus-circle"></i> إضافة منتج</a>
-        <a href="#" onclick="showSection('manageSection', this)"><i class="fas fa-box-open"></i> إدارة المنتجات</a>
-        <a href="#" onclick="showSection('warehouseSection', this)"><i class="fas fa-warehouse"></i> المخزن</a>
-        <a href="index.html" style="margin-top: 50px; background: rgba(255,255,255,0.1);"><i class="fas fa-store"></i> المتجر</a>
+        <div class="sidebar-brand">Cli<span>cks</span></div>
+        <a href="#" class="active" onclick="switchSection('addSection', this)"><i class="fas fa-plus-square"></i> إضافة منتج</a>
+        <a href="#" onclick="switchSection('manageSection', this)"><i class="fas fa-th-list"></i> إدارة المنتجات</a>
+        <a href="#" onclick="switchSection('warehouseSection', this)"><i class="fas fa-warehouse"></i> المخزن</a>
+        <a href="index.html" style="margin-top: auto; border: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-external-link-alt"></i> زيارة المتجر</a>
     </div>
 
     <div class="main-content">
+        
         <div id="addSection" class="section-content">
-            <h1 class="section-title"><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h1>
+            <div class="page-header"><h1>إضافة منتج احترافي</h1></div>
             <div class="card">
-                <div class="form-section-title">المعلومات الأساسية</div>
+                <div class="form-title"><i class="fas fa-info-circle"></i> البيانات الأساسية</div>
                 <div class="form-grid">
-                    <div class="form-group"><label>اسم المنتج</label><input type="text" id="itemName" placeholder="مثال: لابتوب ديل G15"></div>
-                    <div class="form-group"><label>الماركة (Brand)</label><input type="text" id="itemBrand" placeholder="Dell, Apple..."></div>
-                    <div class="form-group"><label>الموديل / الكود (SKU)</label><input type="text" id="itemSKU" placeholder="SKU-1002"></div>
+                    <div class="form-group"><label>اسم المنتج</label><input type="text" id="itemName" placeholder="مثال: iPhone 15 Pro"></div>
+                    <div class="form-group"><label>الماركة</label><input type="text" id="itemBrand" placeholder="Apple, Samsung..."></div>
+                    <div class="form-group"><label>موديل / SKU</label><input type="text" id="itemSKU" placeholder="SKU-12345"></div>
                     <div class="form-group">
                         <label>القسم</label>
                         <select id="itemCategory">
                             <option value="Mobiles">موبايلات</option>
                             <option value="Laptops">لابتوبات</option>
-                            <option value="Tablets">تابلت</option>
                             <option value="PC">كمبيوتر</option>
                             <option value="Accessories">إكسسوارات</option>
                             <option value="Services">صيانة</option>
@@ -101,59 +135,69 @@
                     <div class="form-group">
                         <label>حالة المنتج</label>
                         <select id="itemCondition">
-                            <option value="جديد">جديد (New)</option>
-                            <option value="مستعمل">مستعمل (Used)</option>
-                            <option value="مجدد">مجدد (Refurbished)</option>
+                            <option value="جديد">جديد</option>
+                            <option value="مستعمل">مستعمل</option>
+                            <option value="مجدد">مجدد</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>الضمان</label><input type="text" id="itemWarranty" placeholder="مثال: 12 شهر"></div>
+                    <div class="form-group"><label>الضمان</label><input type="text" id="itemWarranty" placeholder="مثال: سنتين"></div>
                 </div>
 
-                <div class="form-section-title">التسعير والمخزن</div>
+                <div class="form-title"><i class="fas fa-tag"></i> السعر والمخزون</div>
                 <div class="form-grid">
-                    <div class="form-group"><label>السعر الحالي (ج.م)</label><input type="number" id="itemPrice" placeholder="0.00"></div>
-                    <div class="form-group"><label>السعر قبل الخصم (اختياري)</label><input type="number" id="itemOldPrice" placeholder="0.00"></div>
-                    <div class="form-group"><label>الكمية المتوفرة بالمخزن</label><input type="number" id="itemQty" value="1"></div>
+                    <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="itemPrice"></div>
+                    <div class="form-group"><label>السعر قبل الخصم</label><input type="number" id="itemOldPrice"></div>
+                    <div class="form-group"><label>الكمية المتاحة</label><input type="number" id="itemQty" value="1"></div>
                 </div>
 
-                <div class="form-section-title">المواصفات والصورة</div>
+                <div class="form-title"><i class="fas fa-image"></i> تفاصيل إضافية</div>
                 <div class="form-grid">
-                    <div class="form-group double-width"><label>وصف ومواصفات المنتج</label><textarea id="itemDesc" rows="5" placeholder="اكتب الرام، البروسيسور، الهارد..."></textarea></div>
-                    <div class="form-group">
-                        <label>صورة المنتج الرئيسية</label>
-                        <div class="upload-placeholder" onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-cloud-upload-alt fa-2x" style="color: #007bff;"></i>
-                            <p>ارفع صورة</p>
+                    <div class="form-group full-width"><label>وصف المنتج</label><textarea id="itemDesc" rows="4"></textarea></div>
+                    <div class="form-group full-width">
+                        <label>صورة المنتج</label>
+                        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--primary);"></i>
+                            <p>اضغط لاختيار صورة المنتج</p>
                             <input type="file" id="fileInput" hidden accept="image/*">
                             <center><img id="imagePreview" class="preview-img"></center>
                         </div>
                     </div>
                 </div>
-                <button class="btn-main" id="publishBtn"><i class="fas fa-check-circle"></i> تأكيد وحفظ المنتج</button>
+                <button class="btn btn-primary" id="saveBtn"><i class="fas fa-save"></i> حفظ المنتج في المتجر</button>
             </div>
         </div>
 
         <div id="manageSection" class="section-content" style="display: none;">
-            <h1 class="section-title"><i class="fas fa-tasks"></i> إدارة الأقسام</h1>
-            <div class="tabs-nav" id="adminFilterTabs">
-                <button class="tab-btn active" onclick="loadAdminProducts('all', this)">الكل</button>
-                <button class="tab-btn" onclick="loadAdminProducts('Mobiles', this)">موبايلات</button>
-                <button class="tab-btn" onclick="loadAdminProducts('Laptops', this)">لابتوبات</button>
-                <button class="tab-btn" onclick="loadAdminProducts('PC', this)">كمبيوتر</button>
-                <button class="tab-btn" onclick="loadAdminProducts('Accessories', this)">إكسسوارات</button>
-                <button class="tab-btn" onclick="loadAdminProducts('Services', this)">صيانة</button>
+            <div class="page-header"><h1>إدارة المنتجات والأقسام</h1></div>
+            <div class="tabs-container" id="filterTabs">
+                <button class="tab-pill active" data-filter="all">الكل</button>
+                <button class="tab-pill" data-filter="Mobiles">موبايلات</button>
+                <button class="tab-pill" data-filter="Laptops">لابتوبات</button>
+                <button class="tab-pill" data-filter="PC">كمبيوتر</button>
+                <button class="tab-pill" data-filter="Accessories">إكسسوارات</button>
+                <button class="tab-pill" data-filter="Services">صيانة</button>
             </div>
-            <table>
-                <thead><tr><th>الصورة</th><th>الاسم</th><th>السعر</th><th>القسم</th><th>الكمية</th><th>إجراءات</th></tr></thead>
-                <tbody id="productsTableBody"></tbody>
-            </table>
+            <div class="card table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الصورة</th><th>اسم المنتج</th><th>السعر</th><th>القسم</th><th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manageTableBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="warehouseSection" class="section-content" style="display: none;">
-            <h1 class="section-title"><i class="fas fa-warehouse"></i> جرد المخزن</h1>
-            <div class="card">
+            <div class="page-header"><h1>جرد المخزون والكميات</h1></div>
+            <div class="card table-container">
                 <table>
-                    <thead><tr><th>المنتج</th><th>القسم</th><th>الكمية الحالية</th><th>الحالة</th><th>تعديل سريع</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>المنتج</th><th>القسم</th><th>الكمية المتوفرة</th><th>تحديث سريع</th>
+                        </tr>
+                    </thead>
                     <tbody id="warehouseTableBody"></tbody>
                 </table>
             </div>
@@ -162,36 +206,49 @@
 
     <div class="modal" id="editModal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px;">تعديل بيانات المنتج</h2>
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="form-title">تعديل المنتج بالكامل</div>
             <div class="form-grid">
                 <div class="form-group"><label>الاسم</label><input type="text" id="editName"></div>
                 <div class="form-group"><label>الماركة</label><input type="text" id="editBrand"></div>
+                <div class="form-group"><label>SKU</label><input type="text" id="editSKU"></div>
                 <div class="form-group">
                     <label>القسم</label>
                     <select id="editCategory">
                         <option value="Mobiles">موبايلات</option>
                         <option value="Laptops">لابتوبات</option>
-                        <option value="Tablets">تابلت</option>
                         <option value="PC">كمبيوتر</option>
                         <option value="Accessories">إكسسوارات</option>
                         <option value="Services">صيانة</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select id="editCondition">
+                        <option value="جديد">جديد</option>
+                        <option value="مستعمل">مستعمل</option>
+                        <option value="مجدد">مجدد</option>
+                    </select>
+                </div>
                 <div class="form-group"><label>السعر</label><input type="number" id="editPrice"></div>
-                <div class="form-group"><label>الكمية بالمخزن</label><input type="number" id="editQty"></div>
+                <div class="form-group"><label>الكمية</label><input type="number" id="editQty"></div>
                 <div class="form-group"><label>الضمان</label><input type="text" id="editWarranty"></div>
-                <div class="form-group full-width"><label>المواصفات</label><textarea id="editDesc" rows="4"></textarea></div>
+                <div class="form-group full-width"><label>الوصف</label><textarea id="editDesc" rows="3"></textarea></div>
+                <div class="form-group full-width">
+                    <label>تغيير الصورة</label>
+                    <input type="file" id="editFileInput" accept="image/*">
+                </div>
             </div>
-            <div style="display: flex; gap: 15px; margin-top: 30px;">
-                <button class="btn-main" onclick="updateProduct()"><i class="fas fa-save"></i> حفظ التغييرات</button>
-                <button class="btn-main" style="background: var(--secondary);" onclick="closeEditModal()">إلغاء</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveEdit()" style="margin: 0; flex: 2;">تحديث البيانات</button>
+                <button class="btn btn-delete" onclick="closeModal()" style="flex: 1;">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, where, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
@@ -206,148 +263,166 @@
         const db = getFirestore(app);
 
         let base64Image = "";
+        let editBase64Image = "";
         let currentEditId = null;
+        let unsubscribeAdmin = null;
 
-        // التنقل بين السيكشنات
-        window.showSection = (sectionId, element) => {
+        // تبديل السيكشنات
+        window.switchSection = (id, el) => {
             document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
-            document.getElementById(sectionId).style.display = 'block';
+            document.getElementById(id).style.display = 'block';
             document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-            element.classList.add('active');
-            
-            if(sectionId === 'manageSection') loadAdminProducts('all');
-            if(sectionId === 'warehouseSection') loadWarehouse();
+            el.classList.add('active');
+            if(id === 'manageSection') loadManageData('all');
+            if(id === 'warehouseSection') loadWarehouseData();
         };
 
-        // معالجة رفع الصورة
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        // معالجة الصور
+        document.getElementById('fileInput').addEventListener('change', (e) => {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 base64Image = ev.target.result;
                 document.getElementById('imagePreview').src = base64Image;
                 document.getElementById('imagePreview').style.display = 'block';
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(e.target.files[0]);
         });
 
-        // إضافة منتج جديد
-        document.getElementById('publishBtn').addEventListener('click', async () => {
-            const name = document.getElementById('itemName').value;
-            const price = document.getElementById('itemPrice').value;
-            const category = document.getElementById('itemCategory').value;
-            const qty = document.getElementById('itemQty').value;
+        // حفظ منتج جديد
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('saveBtn');
+            const data = {
+                name: document.getElementById('itemName').value,
+                brand: document.getElementById('itemBrand').value,
+                sku: document.getElementById('itemSKU').value,
+                category: document.getElementById('itemCategory').value,
+                condition: document.getElementById('itemCondition').value,
+                warranty: document.getElementById('itemWarranty').value,
+                price: Number(document.getElementById('itemPrice').value),
+                oldPrice: Number(document.getElementById('itemOldPrice').value) || null,
+                qty: Number(document.getElementById('itemQty').value),
+                description: document.getElementById('itemDesc').value,
+                image: base64Image,
+                createdAt: new Date()
+            };
 
-            if(!name || !price || !base64Image) return alert("برجاء إكمال البيانات الأساسية والصورة");
-
-            try {
-                await addDoc(collection(db, "products"), {
-                    name, brand: document.getElementById('itemBrand').value,
-                    sku: document.getElementById('itemSKU').value,
-                    price: Number(price),
-                    oldPrice: Number(document.getElementById('itemOldPrice').value) || null,
-                    category, qty: Number(qty),
-                    condition: document.getElementById('itemCondition').value,
-                    warranty: document.getElementById('itemWarranty').value,
-                    description: document.getElementById('itemDesc').value,
-                    image: base64Image,
-                    createdAt: new Date()
-                });
-                alert("تم حفظ المنتج بنجاح!");
-                location.reload();
-            } catch (e) { alert("خطأ في الاتصال!"); }
-        });
-
-        // إدارة المنتجات (الفلترة)
-        window.loadAdminProducts = (category, btn) => {
-            if(btn) {
-                document.querySelectorAll('#adminFilterTabs .tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
+            if(!data.name || !data.price || !base64Image) return alert("من فضلك أدخل الاسم والسعر والصورة");
             
-            const tbody = document.getElementById('productsTableBody');
-            const ref = collection(db, "products");
-            let q = category === 'all' ? query(ref, orderBy("createdAt", "desc")) : query(ref, where("category", "==", category), orderBy("createdAt", "desc"));
+            btn.disabled = true;
+            btn.innerHTML = "جاري الحفظ...";
+            await addDoc(collection(db, "products"), data);
+            alert("تم حفظ المنتج بنجاح!");
+            location.reload();
+        });
 
-            onSnapshot(q, (snap) => {
+        // إدارة المنتجات مع فلترة صحيحة
+        window.loadManageData = (filterValue) => {
+            if(unsubscribeAdmin) unsubscribeAdmin(); // إلغاء المستمع القديم لمنع التداخل
+
+            const tbody = document.getElementById('manageTableBody');
+            const ref = collection(db, "products");
+            let q = filterValue === 'all' 
+                ? query(ref, orderBy("createdAt", "desc")) 
+                : query(ref, where("category", "==", filterValue), orderBy("createdAt", "desc"));
+
+            unsubscribeAdmin = onSnapshot(q, (snap) => {
                 tbody.innerHTML = "";
-                snap.forEach(doc => {
-                    const p = doc.data();
+                snap.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const id = docSnap.id;
                     tbody.innerHTML += `
                         <tr>
-                            <td><img src="${p.image}" style="width:50px; border-radius:8px;"></td>
-                            <td style="font-weight:bold;">${p.name}</td>
-                            <td>${p.price} ج.م</td>
-                            <td><span class="badge-stock bg-ok">${p.category}</span></td>
-                            <td>${p.qty || 0}</td>
+                            <td><img src="${p.image}" class="product-img-table"></td>
+                            <td style="font-weight:700;">${p.name}</td>
+                            <td>${p.price.toLocaleString()} ج.م</td>
+                            <td><span style="background:#eef2ff; color:#4f46e5; padding:5px 10px; border-radius:8px; font-size:12px;">${p.category}</span></td>
                             <td>
-                                <button class="btn-stock btn-plus" onclick="openEditModal('${doc.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})" style="width: auto; padding: 5px 10px; background: #fff3e0; color: #ef6c00;">تعديل</button>
-                                <button class="btn-stock btn-minus" onclick="deleteProduct('${doc.id}')" style="width: auto; padding: 5px 10px; background: #ffebee; color: var(--danger);">حذف</button>
+                                <button class="btn btn-action btn-edit" onclick="openEditModal('${id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-action btn-delete" onclick="deleteProduct('${id}')"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>`;
                 });
             });
         };
 
-        // المخزن
-        window.loadWarehouse = () => {
+        // فلترة التابات
+        document.querySelectorAll('.tab-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                loadManageData(btn.getAttribute('data-filter'));
+            });
+        });
+
+        // المخزن وتحديث مباشر
+        window.loadWarehouseData = () => {
             const tbody = document.getElementById('warehouseTableBody');
             onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
                 tbody.innerHTML = "";
-                snap.forEach(doc => {
-                    const p = doc.data();
-                    const statusClass = p.qty < 5 ? 'bg-low' : 'bg-ok';
-                    const statusText = p.qty < 5 ? 'مخزون منخفض' : 'متوفر';
+                snap.forEach(docSnap => {
+                    const p = docSnap.data();
                     tbody.innerHTML += `
                         <tr>
-                            <td style="font-weight:600;">${p.name}</td>
+                            <td style="text-align:right; font-weight:700;">${p.name}</td>
                             <td>${p.category}</td>
-                            <td style="font-weight:700; font-size:18px;">${p.qty || 0}</td>
-                            <td><span class="badge-stock ${statusClass}">${statusText}</span></td>
-                            <td>
-                                <div class="stock-control">
-                                    <button class="btn-stock btn-minus" onclick="updateStock('${doc.id}', -1)">-</button>
-                                    <button class="btn-stock btn-plus" onclick="updateStock('${doc.id}', 1)">+</button>
-                                </div>
-                            </td>
+                            <td><input type="number" class="stock-input" value="${p.qty}" onchange="directUpdateQty('${docSnap.id}', this.value)"></td>
+                            <td><i class="fas fa-sync-alt" style="color:var(--success);"></i> تم التحديث</td>
                         </tr>`;
                 });
             });
         };
 
-        window.updateStock = async (id, val) => {
-            await updateDoc(doc(db, "products", id), { qty: increment(val) });
+        window.directUpdateQty = async (id, val) => {
+            await updateDoc(doc(db, "products", id), { qty: Number(val) });
         };
 
         window.deleteProduct = async (id) => {
-            if(confirm("حذف المنتج نهائياً؟")) await deleteDoc(doc(db, "products", id));
+            if(confirm("حذف المنتج نهائياً من المتجر؟")) await deleteDoc(doc(db, "products", id));
         };
 
+        // مودال التعديل
         window.openEditModal = (id, data) => {
             currentEditId = id;
             document.getElementById('editName').value = data.name;
+            document.getElementById('editBrand').value = data.brand || '';
+            document.getElementById('editSKU').value = data.sku || '';
+            document.getElementById('editCategory').value = data.category;
+            document.getElementById('editCondition').value = data.condition || 'جديد';
             document.getElementById('editPrice').value = data.price;
             document.getElementById('editQty').value = data.qty || 0;
-            document.getElementById('editCategory').value = data.category;
             document.getElementById('editWarranty').value = data.warranty || '';
             document.getElementById('editDesc').value = data.description || '';
+            editBase64Image = data.image;
             document.getElementById('editModal').style.display = 'flex';
         };
 
-        window.closeEditModal = () => document.getElementById('editModal').style.display = 'none';
+        window.closeModal = () => document.getElementById('editModal').style.display = 'none';
 
-        window.updateProduct = async () => {
-            await updateDoc(doc(db, "products", currentEditId), {
+        window.saveEdit = async () => {
+            const ref = doc(db, "products", currentEditId);
+            const updatedData = {
                 name: document.getElementById('editName').value,
+                brand: document.getElementById('editBrand').value,
+                sku: document.getElementById('editSKU').value,
+                category: document.getElementById('editCategory').value,
+                condition: document.getElementById('editCondition').value,
                 price: Number(document.getElementById('editPrice').value),
                 qty: Number(document.getElementById('editQty').value),
-                category: document.getElementById('editCategory').value,
                 warranty: document.getElementById('editWarranty').value,
-                description: document.getElementById('editDesc').value
-            });
-            alert("تم التحديث");
-            closeEditModal();
+                description: document.getElementById('editDesc').value,
+                image: editBase64Image
+            };
+            await updateDoc(ref, updatedData);
+            alert("تم تحديث البيانات");
+            closeModal();
         };
+
+        // معالجة صورة التعديل
+        document.getElementById('editFileInput').addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => editBase64Image = ev.target.result;
+            reader.readAsDataURL(e.target.files[0]);
+        });
 
     </script>
 </body>
