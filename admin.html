@@ -7,19 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #007bff; --secondary: #6c757d; --dark: #1a1d20; --success: #28a745; --bg: #f8f9fa; }
+        :root { --primary: #007bff; --secondary: #6c757d; --dark: #1a1d20; --success: #28a745; --bg: #f8f9fa; --warning: #ffc107; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg); display: flex; color: #333; }
 
         /* Sidebar */
-        .sidebar { width: 260px; background: var(--dark); color: white; min-height: 100vh; padding: 20px; position: fixed; right: 0; }
+        .sidebar { width: 260px; background: var(--dark); color: white; min-height: 100vh; padding: 20px; position: fixed; right: 0; z-index: 100; }
         .sidebar h2 { color: var(--primary); text-align: center; margin-bottom: 30px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .sidebar a { color: #adb5bd; text-decoration: none; display: flex; align-items: center; padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; transition: 0.3s; }
         .sidebar a:hover, .sidebar a.active { background: var(--primary); color: white; }
         .sidebar a i { margin-left: 12px; font-size: 18px; }
 
         /* Main Content */
-        .main-content { flex: 1; margin-right: 260px; padding: 40px; }
+        .main-content { flex: 1; margin-right: 260px; padding: 40px; width: calc(100% - 260px); }
         .page-header { margin-bottom: 30px; }
         .page-header h1 { font-size: 28px; color: var(--dark); }
 
@@ -29,7 +29,7 @@
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* Form Card */
-        .card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 30px; border: 1px solid #edf2f9; }
+        .card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 30px; border: 1px solid #edf2f9; margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group.full-width { grid-column: span 2; }
@@ -41,13 +41,24 @@
         .upload-area { border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #fafafa; }
         .upload-area:hover { border-color: var(--primary); background: #f0f7ff; }
         .upload-area i { font-size: 40px; color: #adb5bd; margin-bottom: 10px; }
-        #imagePreview { max-width: 200px; max-height: 200px; margin-top: 15px; border-radius: 8px; display: none; margin-left: auto; margin-right: auto; }
+        .preview-img { max-width: 150px; max-height: 150px; margin-top: 15px; border-radius: 8px; display: none; margin-left: auto; margin-right: auto; }
 
         .btn-publish { background: var(--success); color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-publish:hover { background: #218838; transform: translateY(-2px); }
-        .btn-publish:disabled { background: #ccc; cursor: not-allowed; }
 
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 15px; padding: 30px; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #666; }
+        
         .status-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: center; }
+        th { background: #f8f9fa; }
+        .btn-edit { background: var(--warning); color: #000; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-left: 5px; }
+        .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -61,111 +72,119 @@
     </div>
 
     <div class="main-content">
-        <div class="page-header">
-            <h1>لوحة التحكم | إضافة منتج أو خدمة</h1>
-            <p style="color: #6c757d;">قم بإضافة تفاصيل المنتج واختيار القسم المناسب</p>
+        <div id="addSection">
+            <div class="page-header">
+                <h1>لوحة التحكم | إضافة منتج جديد</h1>
+            </div>
+
+            <div class="tabs-nav" id="categoryTabs">
+                <button class="tab-btn active" data-cat="Mobiles">موبايلات</button>
+                <button class="tab-btn" data-cat="Laptops">لابتوبات</button>
+                <button class="tab-btn" data-cat="Tablets">تابلت</button>
+                <button class="tab-btn" data-cat="PC">كمبيوتر</button>
+                <button class="tab-btn" data-cat="Accessories">إكسسوارات</button>
+                <button class="tab-btn" data-cat="Services">خدمات</button>
+            </div>
+
+            <div class="card">
+                <div id="status" class="status-msg"></div>
+                <div class="form-grid">
+                    <div class="form-group"><label>الاسم</label><input type="text" id="itemName"></div>
+                    <div class="form-group"><label>الماركة</label><input type="text" id="itemBrand"></div>
+                    <div class="form-group"><label>السعر الحالي</label><input type="number" id="itemPrice"></div>
+                    <div class="form-group"><label>السعر القديم</label><input type="number" id="itemOldPrice"></div>
+                    <div class="form-group">
+                        <label>حالة التوفر</label>
+                        <select id="itemStock">
+                            <option value="available">متوفر</option>
+                            <option value="out">نفذت الكمية</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>الضمان</label><input type="text" id="itemWarranty"></div>
+                    <div class="form-group full-width"><label>الوصف</label><textarea id="itemDesc" rows="3"></textarea></div>
+                    <div class="form-group full-width">
+                        <label>الصورة</label>
+                        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-image"></i><p>رفع صورة</p>
+                            <input type="file" id="fileInput" hidden accept="image/*">
+                            <img id="imagePreview" class="preview-img">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-publish" id="publishBtn"><i class="fas fa-plus"></i> إضافة المنتج الآن</button>
+            </div>
         </div>
 
-        <div class="tabs-nav" id="categoryTabs">
-            <button class="tab-btn active" data-cat="Mobiles"><i class="fas fa-mobile-alt"></i> موبايلات</button>
-            <button class="tab-btn" data-cat="Laptops"><i class="fas fa-laptop"></i> لابتوبات</button>
-            <button class="tab-btn" data-cat="Tablets"><i class="fas fa-tablet-alt"></i> تابلت</button>
-            <button class="tab-btn" data-cat="PC"><i class="fas fa-desktop"></i> كمبيوتر</button>
-            <button class="tab-btn" data-cat="Accessories"><i class="fas fa-headphones"></i> إكسسوارات</button>
-            <button class="tab-btn" data-cat="Services"><i class="fas fa-tools"></i> خدمات صيانة</button>
+        <div id="manageSection" style="display: none;">
+            <div class="page-header"><h1>إدارة المنتجات</h1></div>
+            
+            <div class="tabs-nav" id="adminFilterTabs">
+                <button class="tab-btn active" onclick="loadAdminProducts('all')">الكل</button>
+                <button class="tab-btn" onclick="loadAdminProducts('Mobiles')">موبايلات</button>
+                <button class="tab-btn" onclick="loadAdminProducts('Laptops')">لابتوبات</button>
+                <button class="tab-btn" onclick="loadAdminProducts('PC')">كمبيوتر</button>
+                <button class="tab-btn" onclick="loadAdminProducts('Accessories')">إكسسوارات</button>
+                <button class="tab-btn" onclick="loadAdminProducts('Services')">خدمات</button>
+            </div>
+
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الصورة</th><th>الاسم</th><th>السعر</th><th>القسم</th><th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="card">
-            <div id="status" class="status-msg"></div>
-
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تعديل بيانات المنتج</h2>
+                <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            </div>
             <div class="form-grid">
+                <div class="form-group"><label>الاسم</label><input type="text" id="editName"></div>
+                <div class="form-group"><label>الماركة</label><input type="text" id="editBrand"></div>
+                <div class="form-group"><label>السعر الحالي</label><input type="number" id="editPrice"></div>
+                <div class="form-group"><label>السعر القديم</label><input type="number" id="editOldPrice"></div>
                 <div class="form-group">
-                    <label>اسم المنتج / الخدمة</label>
-                    <input type="text" id="itemName" placeholder="مثال: iPhone 15 Pro Max">
-                </div>
-
-                <div class="form-group">
-                    <label>الماركة (Brand)</label>
-                    <input type="text" id="itemBrand" placeholder="مثال: Apple, HP, Samsung">
-                </div>
-
-                <div class="form-group">
-                    <label>السعر الحالي (ج.م)</label>
-                    <input type="number" id="itemPrice" placeholder="0.00">
-                </div>
-
-                <div class="form-group">
-                    <label>السعر قبل الخصم (اختياري)</label>
-                    <input type="number" id="itemOldPrice" placeholder="0.00">
-                </div>
-
-                <div class="form-group">
-                    <label>حالة التوفر</label>
-                    <select id="itemStock">
-                        <option value="available">متوفر في المخزن</option>
-                        <option value="out">غير متوفر حالياً</option>
-                        <option value="order">طلب مسبق</option>
+                    <label>القسم</label>
+                    <select id="editCategory">
+                        <option value="Mobiles">موبايلات</option>
+                        <option value="Laptops">لابتوبات</option>
+                        <option value="Tablets">تابلت</option>
+                        <option value="PC">كمبيوتر</option>
+                        <option value="Accessories">إكسسوارات</option>
+                        <option value="Services">خدمات</option>
                     </select>
                 </div>
-                
-
-                <div class="form-group">
-                    <label>الضمان</label>
-                    <input type="text" id="itemWarranty" placeholder="مثال: ضمان سنة دولي">
-                </div>
-
+                <div class="form-group"><label>الضمان</label><input type="text" id="editWarranty"></div>
+                <div class="form-group full-width"><label>الوصف</label><textarea id="editDesc" rows="3"></textarea></div>
                 <div class="form-group full-width">
-                    <label>وصف المنتج بالتفصيل</label>
-                    <textarea id="itemDesc" rows="4" placeholder="اكتب مواصفات المنتج ومميزاته هنا..."></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <label>صورة المنتج</label>
-                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>اضغط هنا لرفع صورة من جهازك</p>
-                        <input type="file" id="fileInput" hidden accept="image/*">
-                        <img id="imagePreview" alt="معاينة">
+                    <label>تغيير الصورة (اختياري)</label>
+                    <div class="upload-area" onclick="document.getElementById('editFileInput').click()">
+                        <img id="editImagePreview" class="preview-img" style="display: block;">
+                        <input type="file" id="editFileInput" hidden accept="image/*">
                     </div>
                 </div>
             </div>
-
-            <button class="btn-publish" id="publishBtn">
-                <i class="fas fa-paper-plane"></i> نشر المحتوى الآن
-            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-publish" onclick="updateProduct()"><i class="fas fa-save"></i> حفظ التعديلات</button>
+                <button class="btn-publish" style="background: var(--secondary);" onclick="closeEditModal()">إلغاء</button>
+            </div>
         </div>
-        <div id="manageSection" class="card" style="display: none; margin-top: 20px;">
-    <h2 style="margin-bottom: 20px;">المنتجات الحالية</h2>
-            <div class="tabs-nav" id="adminFilterTabs" style="margin-bottom: 15px; border-bottom: none;">
-    <button class="tab-btn active" onclick="loadAdminProducts('all')">الكل</button>
-    <button class="tab-btn" onclick="loadAdminProducts('Mobiles')">موبايلات</button>
-    <button class="tab-btn" onclick="loadAdminProducts('Laptops')">لابتوبات</button>
-    <button class="tab-btn" onclick="loadAdminProducts('PC')">كمبيوتر</button>
-    <button class="tab-btn" onclick="loadAdminProducts('Accessories')">إكسسوارات</button>
-    <button class="tab-btn" onclick="loadAdminProducts('Services')">صيانة</button>
-</div>
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; text-align: right; min-width: 600px;">
-            <thead>
-                <tr style="background: #f1f1f1;">
-                    <th style="padding: 12px; border: 1px solid #ddd;">الصورة</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">الاسم</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">السعر</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">القسم</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">إجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="productsTableBody">
-                </tbody>
-        </table>
-    </div>
-</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        // إعدادات فايربيز الخاصة بك
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
             authDomain: "clicks-f7ce3.firebaseapp.com",
@@ -176,202 +195,176 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        let editingId = null;
         const db = getFirestore(app);
-        // التبديل بين الأقسام
-const addSection = document.querySelector('.card'); // فورم الإضافة
-const manageSection = document.getElementById('manageSection');
-const addNav = document.getElementById('addNav');
-const manageNav = document.getElementById('manageNav');
 
-manageNav.addEventListener('click', (e) => {
-    e.preventDefault();
-    addSection.style.display = 'none';
-    manageSection.style.display = 'block';
-    addNav.classList.remove('active');
-    manageNav.classList.add('active');
-    loadAdminProducts(); // وظيفة هنجيب بيها المنتجات
-});
-
-addNav.addEventListener('click', (e) => {
-    e.preventDefault();
-    addSection.style.display = 'block';
-    manageSection.style.display = 'none';
-    manageNav.classList.remove('active');
-    addNav.classList.add('active');
-});
         let selectedCategory = "Mobiles";
         let base64Image = "";
+        let editBase64Image = "";
+        let currentEditId = null;
 
-        // التعامل مع التبويبات
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        // التبديل بين الأقسام الجانبية
+        const addSection = document.getElementById('addSection');
+        const manageSection = document.getElementById('manageSection');
+        const addNav = document.getElementById('addNav');
+        const manageNav = document.getElementById('manageNav');
+
+        manageNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            addSection.style.display = 'none';
+            manageSection.style.display = 'block';
+            addNav.classList.remove('active');
+            manageNav.classList.add('active');
+            loadAdminProducts('all');
+        });
+
+        addNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            addSection.style.display = 'block';
+            manageSection.style.display = 'none';
+            manageNav.classList.remove('active');
+            addNav.classList.add('active');
+        });
+
+        // تبويبات الأقسام عند الإضافة
+        document.querySelectorAll('#categoryTabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelector('.tab-btn.active').classList.remove('active');
+                document.querySelector('#categoryTabs .tab-btn.active').classList.remove('active');
                 btn.classList.add('active');
                 selectedCategory = btn.getAttribute('data-cat');
             });
         });
 
-        // التعامل مع رفع الصور ومعاينتها
+        // معالجة الصور (إضافة منتج)
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    base64Image = event.target.result;
-                    const preview = document.getElementById('imagePreview');
-                    preview.src = base64Image;
-                    preview.style.display = 'block';
+                reader.onload = (ev) => {
+                    base64Image = ev.target.result;
+                    document.getElementById('imagePreview').src = base64Image;
+                    document.getElementById('imagePreview').style.display = 'block';
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // وظيفة النشر
+        // معالجة الصور (تعديل منتج)
+        document.getElementById('editFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    editBase64Image = ev.target.result;
+                    document.getElementById('editImagePreview').src = editBase64Image;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // إضافة منتج جديد
         document.getElementById('publishBtn').addEventListener('click', async () => {
             const name = document.getElementById('itemName').value;
             const price = document.getElementById('itemPrice').value;
-            const brand = document.getElementById('itemBrand').value;
-            const desc = document.getElementById('itemDesc').value;
-
-            if(!name || !price || !base64Image) {
-                alert("برجاء إدخال البيانات الأساسية (الاسم، السعر، والصورة)");
-                return;
-            }
+            if(!name || !price || !base64Image) return alert("برجاء ملء البيانات الأساسية");
 
             const btn = document.getElementById('publishBtn');
-            const status = document.getElementById('status');
-            
             btn.disabled = true;
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> جاري النشر...";
+            btn.innerText = "جاري النشر...";
 
             try {
-                if (editingId) {
-                    // وضع التعديل (Update)
-                    const productRef = doc(db, "products", editingId);
-                    await updateDoc(productRef, {
-                        name, price: Number(price),
-                        oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
-                        category: selectedCategory,
-                        brand, stock: document.getElementById('itemStock').value,
-                        warranty: document.getElementById('itemWarranty').value,
-                        description: desc, image: base64Image
-                    });
-                    alert("تم تحديث المنتج بنجاح!");
-                    editingId = null; // تصفير وضع التعديل
-                } else {
-                    // وضع الإضافة الجديد (Add)
-                    await addDoc(collection(db, "products"), {
-                        name, price: Number(price),
-                        oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
-                        category: selectedCategory,
-                        brand, stock: document.getElementById('itemStock').value,
-                        warranty: document.getElementById('itemWarranty').value,
-                        description: desc, image: base64Image,
-                        createdAt: new Date()
-                    });
-                }
-                // تصفير الفورم بعد العملية
-                document.getElementById('publishBtn').innerHTML = "<i class='fas fa-paper-plane'></i> نشر المحتوى الآن";
-                document.getElementById('publishBtn').style = ""; // رجوع الألوان الأصلية
-                // ... باقي كود تصفير المدخلات الموجود عندك أصلاً ...
-
-                status.style.display = "block";
-                status.style.backgroundColor = "#d4edda";
-                status.style.color = "#155724";
-                status.innerHTML = "تم نشر " + name + " بنجاح في قسم " + selectedCategory;
-                
-                // إعادة تعيين الفورم
-                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
-                document.getElementById('imagePreview').style.display = 'none';
-                base64Image = "";
-
-            } catch (error) {
-                console.error(error);
-                status.style.display = "block";
-                status.style.backgroundColor = "#f8d7da";
-                status.style.color = "#721c24";
-                status.innerText = "فشل النشر، يرجى المحاولة لاحقاً.";
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = "<i class='fas fa-paper-plane'></i> نشر المحتوى الآن";
-                setTimeout(() => status.style.display = "none", 5000);
-            }
+                await addDoc(collection(db, "products"), {
+                    name, 
+                    price: Number(price),
+                    oldPrice: Number(document.getElementById('itemOldPrice').value) || null,
+                    brand: document.getElementById('itemBrand').value,
+                    category: selectedCategory,
+                    stock: document.getElementById('itemStock').value,
+                    warranty: document.getElementById('itemWarranty').value,
+                    description: document.getElementById('itemDesc').value,
+                    image: base64Image,
+                    createdAt: new Date()
+                });
+                alert("تمت الإضافة بنجاح!");
+                location.reload();
+            } catch (err) { alert("حدث خطأ!"); btn.disabled = false; }
         });
-        // وظيفة جلب المنتجات وعرضها في جدول الإدارة
-window.loadAdminProducts = (filter = "all") => {
-    const tableBody = document.getElementById('productsTableBody');
-    const productsRef = collection(db, "products");
-    
-    // تحديد الكويري بناءً على الفلتر
-    let q;
-    if (filter === "all") {
-        q = query(productsRef, orderBy("createdAt", "desc"));
-    } else {
-        q = query(productsRef, where("category", "==", filter), orderBy("createdAt", "desc"));
-    }
 
-    onSnapshot(q, (snapshot) => {
-        tableBody.innerHTML = "";
-        snapshot.forEach((doc) => {
-            const p = doc.data();
-            const pId = doc.id;
-            tableBody.innerHTML += `
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 10px;"><img src="${p.image}" style="width:45px; height:45px; border-radius:5px; object-fit:cover;"></td>
-                    <td style="padding: 10px;">${p.name}</td>
-                    <td style="padding: 10px;">${Number(p.price).toLocaleString()} ج.م</td>
-                    <td style="padding: 10px;">${p.category}</td>
-                    <td style="padding: 10px;">
-                        <button onclick="prepareEdit('${pId}', ${JSON.stringify(p).replace(/"/g, '&quot;')})" style="background:#ffc107; color:#000; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:5px;">
-                            <i class="fas fa-edit"></i> تعديل
-                        </button>
-                        <button onclick="deleteProduct('${pId}', '${p.name}')" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                    </td>
-                </tr>`;
-        });
-    });
-};
-        // وظيفة حذف المنتج
-window.deleteProduct = async (id, name) => {
-    if (confirm(`هل أنت متأكد من حذف المنتج: ${name}؟`)) {
-        try {
-            await deleteDoc(doc(db, "products", id));
-            alert("تم حذف المنتج بنجاح");
-        } catch (error) {
-            console.error("خطأ في الحذف: ", error);
-            alert("حدث خطأ أثناء الحذف");
-        }
-    }
-};
-        // وظيفة تجهيز البيانات للتعديل
-window.prepareEdit = (id, data) => {
-    editingId = id; // حفظ آي دي المنتج اللي بنعدله
-    
-    // 1. ملء الحقول بالبيانات القديمة
-    document.getElementById('itemName').value = data.name;
-    document.getElementById('itemPrice').value = data.price;
-    document.getElementById('itemOldPrice').value = data.oldPrice || '';
-    document.getElementById('itemBrand').value = data.brand || '';
-    document.getElementById('itemStock').value = data.stock;
-    document.getElementById('itemWarranty').value = data.warranty || '';
-    document.getElementById('itemDesc').value = data.description || '';
-    base64Image = data.image; // حفظ الصورة القديمة
-    
-    // 2. إظهار معاينة الصورة
-    const preview = document.getElementById('imagePreview');
-    preview.src = data.image;
-    preview.style.display = 'block';
+        // جلب المنتجات في لوحة الإدارة مع الفلترة
+        window.loadAdminProducts = (filter) => {
+            // تحديث شكل أزرار الفلترة
+            document.querySelectorAll('#adminFilterTabs .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === filter || (filter === 'all' && btn.innerText === 'الكل')) btn.classList.add('active');
+            });
 
-    // 3. تغيير شكل الزرار والتبديل لصفحة الإضافة
-    document.getElementById('publishBtn').innerHTML = "<i class='fas fa-save'></i> تحديث المنتج الآن";
-    document.getElementById('publishBtn').style.backgroundColor = "#ffc107";
-    document.getElementById('publishBtn').style.color = "#000";
-    
-    addNav.click(); // الرجوع لتبويب الإضافة تلقائياً
-};
+            const tableBody = document.getElementById('productsTableBody');
+            const productsRef = collection(db, "products");
+            let q = filter === "all" ? query(productsRef, orderBy("createdAt", "desc")) : query(productsRef, where("category", "==", filter), orderBy("createdAt", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+                tableBody.innerHTML = "";
+                snapshot.forEach((doc) => {
+                    const p = doc.data();
+                    const pId = doc.id;
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><img src="${p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:5px;"></td>
+                            <td>${p.name}</td>
+                            <td>${p.price.toLocaleString()} ج.م</td>
+                            <td>${p.category}</td>
+                            <td>
+                                <button class="btn-edit" onclick="openEditModal('${pId}', ${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deleteProduct('${pId}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            });
+        };
+
+        // حذف منتج
+        window.deleteProduct = async (id) => {
+            if(confirm("هل أنت متأكد من الحذف؟")) await deleteDoc(doc(db, "products", id));
+        };
+
+        // فتح نافذة التعديل
+        window.openEditModal = (id, data) => {
+            currentEditId = id;
+            document.getElementById('editName').value = data.name;
+            document.getElementById('editPrice').value = data.price;
+            document.getElementById('editOldPrice').value = data.oldPrice || '';
+            document.getElementById('editBrand').value = data.brand || '';
+            document.getElementById('editCategory').value = data.category;
+            document.getElementById('editWarranty').value = data.warranty || '';
+            document.getElementById('editDesc').value = data.description || '';
+            document.getElementById('editImagePreview').src = data.image;
+            editBase64Image = data.image;
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        window.closeEditModal = () => {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        // حفظ التعديلات
+        window.updateProduct = async () => {
+            if(!currentEditId) return;
+            const ref = doc(db, "products", currentEditId);
+            try {
+                await updateDoc(ref, {
+                    name: document.getElementById('editName').value,
+                    price: Number(document.getElementById('editPrice').value),
+                    oldPrice: Number(document.getElementById('editOldPrice').value) || null,
+                    brand: document.getElementById('editBrand').value,
+                    category: document.getElementById('editCategory').value,
+                    warranty: document.getElementById('editWarranty').value,
+                    description: document.getElementById('editDesc').value,
+                    image: editBase64Image
+                });
+                alert("تم التحديث!");
+                closeEditModal();
+            } catch (err) { alert("فشل التحديث!"); }
+        };
+
     </script>
 </body>
 </html>
