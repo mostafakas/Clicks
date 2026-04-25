@@ -19,6 +19,16 @@
         
         /* تأثير عند الضغط على الأقسام */
         .cat-box.active, .categories ul li a.active { color: #007bff; border-color: #007bff; font-weight: bold; }
+        /* === بداية كود تصميم نوافذ السلة والمفضلة === */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .close-btn { position: absolute; top: 15px; left: 15px; font-size: 28px; cursor: pointer; color: #dc3545; transition: 0.3s; }
+        .close-btn:hover { transform: scale(1.2); }
+        .modal-content h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f4f6f9; }
+        .remove-btn { color: white; background: #dc3545; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .empty-msg { text-align: center; color: #777; padding: 20px; font-size: 18px; }
+        /* === نهاية كود تصميم نوافذ السلة والمفضلة === */
     </style>
 </head>
 <body>
@@ -195,45 +205,82 @@
         }
 
         // معالجة الأزرار (السلة والمفضلة)
+// === بداية كود تشغيل النوافذ ومعالجة الأزرار ===
+        
+        // 1. وظيفة إضافة المنتجات (تم تحديثها لحفظ الاسم في المفضلة أيضاً)
         window.handleAction = (type, id, name) => {
             if (type === 'cart') {
                 cart.push({id, name});
                 localStorage.setItem('cart', JSON.stringify(cart));
                 alert(`تم إضافة ${name} للسلة`);
             } else {
-                if (!favorites.includes(id)) {
-                    favorites.push(id);
+                // فحص إذا كان المنتج غير موجود بالمفضلة
+                const exists = favorites.find(item => item.id === id);
+                if (!exists) {
+                    favorites.push({id, name});
                     localStorage.setItem('favorites', JSON.stringify(favorites));
                     alert(`تم إضافة ${name} للمفضلة`);
+                } else {
+                    alert(`المنتج موجود بالفعل في المفضلة!`);
                 }
             }
             updateCounters();
         };
 
-        // تفعيل أزرار التبويبات والأقسام السريعة
-        const filterElements = document.querySelectorAll('[data-filter]');
-        filterElements.forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                const filter = el.getAttribute('data-filter');
-                
-                // تحديث الشكل النشط
-                document.querySelectorAll('[data-filter]').forEach(item => item.classList.remove('active'));
-                el.classList.add('active');
-                
-                // تحديث العنوان وتحميل المنتجات
-                document.getElementById('currentCategoryTitle').innerText = el.innerText;
-                loadProducts(filter);
-                scrollToProducts();
-            });
+        // 2. فتح السلة
+        document.getElementById('cartBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderList(cart, 'cartItemsList', 'cart');
+            document.getElementById('cartModal').style.display = 'flex';
         });
 
-        window.scrollToProducts = () => {
-            document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
+        // 3. فتح المفضلة
+        document.getElementById('favBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            renderList(favorites, 'favItemsList', 'favorites');
+            document.getElementById('favModal').style.display = 'flex';
+        });
+
+        // 4. إغلاق النوافذ المنبثقة
+        window.closeModal = (modalId) => {
+            document.getElementById(modalId).style.display = 'none';
         };
 
-        // تشغيل التحميل الأولي
-        loadProducts("all");
+        // 5. وظيفة رسم المنتجات داخل النافذة (تعمل للسلة والمفضلة)
+        window.renderList = (dataArray, listId, storageKey) => {
+            const list = document.getElementById(listId);
+            list.innerHTML = '';
+            
+            if(dataArray.length === 0) {
+                list.innerHTML = `<p class="empty-msg">القائمة فارغة حالياً</p>`;
+                return;
+            }
+
+            dataArray.forEach((item, index) => {
+                // نعرض اسم المنتج فقط للتبسيط
+                const itemName = item.name ? item.name : "منتج محفوظ قديماً";
+                list.innerHTML += `
+                    <div class="item-row">
+                        <span style="font-weight: 600;">${itemName}</span>
+                        <button class="remove-btn" onclick="removeItem('${storageKey}', ${index}, '${listId}')">حذف</button>
+                    </div>
+                `;
+            });
+        };
+
+        // 6. وظيفة حذف منتج من السلة أو المفضلة
+        window.removeItem = (storageKey, index, listId) => {
+            if (storageKey === 'cart') {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderList(cart, listId, storageKey);
+            } else {
+                favorites.splice(index, 1);
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderList(favorites, listId, storageKey);
+            }
+            updateCounters();
+        };
     </script>
 
 </body>
