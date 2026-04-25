@@ -136,6 +136,14 @@
         </div>
         <div id="manageSection" class="card" style="display: none; margin-top: 20px;">
     <h2 style="margin-bottom: 20px;">المنتجات الحالية</h2>
+            <div class="tabs-nav" id="adminFilterTabs" style="margin-bottom: 15px; border-bottom: none;">
+    <button class="tab-btn active" onclick="loadAdminProducts('all')">الكل</button>
+    <button class="tab-btn" onclick="loadAdminProducts('Mobiles')">موبايلات</button>
+    <button class="tab-btn" onclick="loadAdminProducts('Laptops')">لابتوبات</button>
+    <button class="tab-btn" onclick="loadAdminProducts('PC')">كمبيوتر</button>
+    <button class="tab-btn" onclick="loadAdminProducts('Accessories')">إكسسوارات</button>
+    <button class="tab-btn" onclick="loadAdminProducts('Services')">صيانة</button>
+</div>
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse; text-align: right; min-width: 600px;">
             <thead>
@@ -168,6 +176,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        let editingId = null;
         const db = getFirestore(app);
         // التبديل بين الأقسام
 const addSection = document.querySelector('.card'); // فورم الإضافة
@@ -237,18 +246,35 @@ addNav.addEventListener('click', (e) => {
             btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> جاري النشر...";
 
             try {
-                await addDoc(collection(db, "products"), {
-                    name: name,
-                    price: Number(price),
-                    oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
-                    category: selectedCategory,
-                    brand: brand,
-                    stock: document.getElementById('itemStock').value,
-                    warranty: document.getElementById('itemWarranty').value,
-                    description: desc,
-                    image: base64Image, // يتم حفظ الصورة كـ Base64
-                    createdAt: new Date()
-                });
+                if (editingId) {
+                    // وضع التعديل (Update)
+                    const productRef = doc(db, "products", editingId);
+                    await updateDoc(productRef, {
+                        name, price: Number(price),
+                        oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
+                        category: selectedCategory,
+                        brand, stock: document.getElementById('itemStock').value,
+                        warranty: document.getElementById('itemWarranty').value,
+                        description: desc, image: base64Image
+                    });
+                    alert("تم تحديث المنتج بنجاح!");
+                    editingId = null; // تصفير وضع التعديل
+                } else {
+                    // وضع الإضافة الجديد (Add)
+                    await addDoc(collection(db, "products"), {
+                        name, price: Number(price),
+                        oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
+                        category: selectedCategory,
+                        brand, stock: document.getElementById('itemStock').value,
+                        warranty: document.getElementById('itemWarranty').value,
+                        description: desc, image: base64Image,
+                        createdAt: new Date()
+                    });
+                }
+                // تصفير الفورم بعد العملية
+                document.getElementById('publishBtn').innerHTML = "<i class='fas fa-paper-plane'></i> نشر المحتوى الآن";
+                document.getElementById('publishBtn').style = ""; // رجوع الألوان الأصلية
+                // ... باقي كود تصفير المدخلات الموجود عندك أصلاً ...
 
                 status.style.display = "block";
                 status.style.backgroundColor = "#d4edda";
@@ -273,31 +299,38 @@ addNav.addEventListener('click', (e) => {
             }
         });
         // وظيفة جلب المنتجات وعرضها في جدول الإدارة
-window.loadAdminProducts = () => {
+window.loadAdminProducts = (filter = "all") => {
     const tableBody = document.getElementById('productsTableBody');
     const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy("createdAt", "desc"));
+    
+    // تحديد الكويري بناءً على الفلتر
+    let q;
+    if (filter === "all") {
+        q = query(productsRef, orderBy("createdAt", "desc"));
+    } else {
+        q = query(productsRef, where("category", "==", filter), orderBy("createdAt", "desc"));
+    }
 
-    // استماع لحظي للتغييرات (لو مسحت حاجة تختفي فوراً)
     onSnapshot(q, (snapshot) => {
-        tableBody.innerHTML = ""; // تنظيف الجدول قبل العرض
+        tableBody.innerHTML = "";
         snapshot.forEach((doc) => {
             const p = doc.data();
             const pId = doc.id;
-            
             tableBody.innerHTML += `
                 <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 10px;"><img src="${p.image}" style="width:50px; height:50px; border-radius:5px; object-fit:cover;"></td>
+                    <td style="padding: 10px;"><img src="${p.image}" style="width:45px; height:45px; border-radius:5px; object-fit:cover;"></td>
                     <td style="padding: 10px;">${p.name}</td>
                     <td style="padding: 10px;">${Number(p.price).toLocaleString()} ج.م</td>
                     <td style="padding: 10px;">${p.category}</td>
                     <td style="padding: 10px;">
+                        <button onclick="prepareEdit('${pId}', ${JSON.stringify(p).replace(/"/g, '&quot;')})" style="background:#ffc107; color:#000; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:5px;">
+                            <i class="fas fa-edit"></i> تعديل
+                        </button>
                         <button onclick="deleteProduct('${pId}', '${p.name}')" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
                             <i class="fas fa-trash"></i> حذف
                         </button>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         });
     });
 };
@@ -312,6 +345,32 @@ window.deleteProduct = async (id, name) => {
             alert("حدث خطأ أثناء الحذف");
         }
     }
+};
+        // وظيفة تجهيز البيانات للتعديل
+window.prepareEdit = (id, data) => {
+    editingId = id; // حفظ آي دي المنتج اللي بنعدله
+    
+    // 1. ملء الحقول بالبيانات القديمة
+    document.getElementById('itemName').value = data.name;
+    document.getElementById('itemPrice').value = data.price;
+    document.getElementById('itemOldPrice').value = data.oldPrice || '';
+    document.getElementById('itemBrand').value = data.brand || '';
+    document.getElementById('itemStock').value = data.stock;
+    document.getElementById('itemWarranty').value = data.warranty || '';
+    document.getElementById('itemDesc').value = data.description || '';
+    base64Image = data.image; // حفظ الصورة القديمة
+    
+    // 2. إظهار معاينة الصورة
+    const preview = document.getElementById('imagePreview');
+    preview.src = data.image;
+    preview.style.display = 'block';
+
+    // 3. تغيير شكل الزرار والتبديل لصفحة الإضافة
+    document.getElementById('publishBtn').innerHTML = "<i class='fas fa-save'></i> تحديث المنتج الآن";
+    document.getElementById('publishBtn').style.backgroundColor = "#ffc107";
+    document.getElementById('publishBtn').style.color = "#000";
+    
+    addNav.click(); // الرجوع لتبويب الإضافة تلقائياً
 };
     </script>
 </body>
