@@ -54,8 +54,8 @@
 
     <div class="sidebar">
         <h2>TechZone Admin</h2>
-        <a href="#" class="active"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
-        <a href="#"><i class="fas fa-tasks"></i> إدارة المنتجات</a>
+        <a href="#" class="active" id="addNav"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
+        <a href="#" id="manageNav"><i class="fas fa-tasks"></i> إدارة المنتجات</a>
         <a href="#"><i class="fas fa-chart-line"></i> الإحصائيات</a>
         <a href="index.html" style="margin-top: auto; background: #333;"><i class="fas fa-external-link-alt"></i> زيارة المتجر</a>
     </div>
@@ -107,6 +107,7 @@
                         <option value="order">طلب مسبق</option>
                     </select>
                 </div>
+                
 
                 <div class="form-group">
                     <label>الضمان</label>
@@ -133,6 +134,24 @@
                 <i class="fas fa-paper-plane"></i> نشر المحتوى الآن
             </button>
         </div>
+        <div id="manageSection" class="card" style="display: none; margin-top: 20px;">
+    <h2 style="margin-bottom: 20px;">المنتجات الحالية</h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: right; min-width: 600px;">
+            <thead>
+                <tr style="background: #f1f1f1;">
+                    <th style="padding: 12px; border: 1px solid #ddd;">الصورة</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">الاسم</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">السعر</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">القسم</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="productsTableBody">
+                </tbody>
+        </table>
+    </div>
+</div>
     </div>
 
     <script type="module">
@@ -151,7 +170,28 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        // التبديل بين الأقسام
+const addSection = document.querySelector('.card'); // فورم الإضافة
+const manageSection = document.getElementById('manageSection');
+const addNav = document.getElementById('addNav');
+const manageNav = document.getElementById('manageNav');
 
+manageNav.addEventListener('click', (e) => {
+    e.preventDefault();
+    addSection.style.display = 'none';
+    manageSection.style.display = 'block';
+    addNav.classList.remove('active');
+    manageNav.classList.add('active');
+    loadAdminProducts(); // وظيفة هنجيب بيها المنتجات
+});
+
+addNav.addEventListener('click', (e) => {
+    e.preventDefault();
+    addSection.style.display = 'block';
+    manageSection.style.display = 'none';
+    manageNav.classList.remove('active');
+    addNav.classList.add('active');
+});
         let selectedCategory = "Mobiles";
         let base64Image = "";
 
