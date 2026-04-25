@@ -2,84 +2,136 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة التحكم | Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الاحترافية | TechZone Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root { --primary: #007bff; --secondary: #6c757d; --dark: #1a1d20; --success: #28a745; --bg: #f8f9fa; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: #f4f6f9; display: flex; }
-        .sidebar { width: 250px; background: #111; color: white; min-height: 100vh; padding: 20px; }
-        .sidebar h2 { color: #007bff; margin-bottom: 30px; text-align: center; }
-        .sidebar a { color: #ccc; text-decoration: none; display: block; padding: 15px; margin-bottom: 5px; border-radius: 5px; transition: 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background: #007bff; color: white; }
-        .sidebar a i { margin-left: 10px; width: 20px; }
-        .main-content { flex: 1; padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 800px; }
-        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
-        .form-group { flex: 1; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
-        input:focus, select:focus { border-color: #007bff; }
-        .btn-add { background-color: #007bff; color: white; border: none; padding: 15px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; border-radius: 5px; margin-top: 10px; }
-        .btn-add:hover { background-color: #0056b3; }
-        .status-msg { margin-bottom: 20px; padding: 15px; border-radius: 5px; display: none; font-weight: bold; }
+        body { background-color: var(--bg); display: flex; color: #333; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--dark); color: white; min-height: 100vh; padding: 20px; position: fixed; right: 0; }
+        .sidebar h2 { color: var(--primary); text-align: center; margin-bottom: 30px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .sidebar a { color: #adb5bd; text-decoration: none; display: flex; align-items: center; padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: var(--primary); color: white; }
+        .sidebar a i { margin-left: 12px; font-size: 18px; }
+
+        /* Main Content */
+        .main-content { flex: 1; margin-right: 260px; padding: 40px; }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; color: var(--dark); }
+
+        /* Tabs System */
+        .tabs-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #ddd; padding-bottom: 10px; overflow-x: auto; }
+        .tab-btn { background: white; border: 1px solid #ddd; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; white-space: nowrap; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Form Card */
+        .card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 30px; border: 1px solid #edf2f9; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: span 2; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; color: #495057; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 1.5px solid #e1e5eb; border-radius: 8px; outline: none; transition: 0.3s; font-size: 15px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+        
+        /* Image Upload Area */
+        .upload-area { border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #fafafa; }
+        .upload-area:hover { border-color: var(--primary); background: #f0f7ff; }
+        .upload-area i { font-size: 40px; color: #adb5bd; margin-bottom: 10px; }
+        #imagePreview { max-width: 200px; max-height: 200px; margin-top: 15px; border-radius: 8px; display: none; margin-left: auto; margin-right: auto; }
+
+        .btn-publish { background: var(--success); color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-publish:hover { background: #218838; transform: translateY(-2px); }
+        .btn-publish:disabled { background: #ccc; cursor: not-allowed; }
+
+        .status-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>Admin<span>Panel</span></h2>
-        <a href="#" class="active"><i class="fas fa-plus-circle"></i> إضافة منتج</a>
-        <a href="#"><i class="fas fa-box"></i> إدارة المنتجات</a>
-        <a href="#"><i class="fas fa-shopping-cart"></i> الطلبات</a>
-        <a href="index.html" style="margin-top: 50px; background: #333;"><i class="fas fa-store"></i> عرض المتجر</a>
+        <h2>TechZone Admin</h2>
+        <a href="#" class="active"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
+        <a href="#"><i class="fas fa-tasks"></i> إدارة المنتجات</a>
+        <a href="#"><i class="fas fa-chart-line"></i> الإحصائيات</a>
+        <a href="index.html" style="margin-top: auto; background: #333;"><i class="fas fa-external-link-alt"></i> زيارة المتجر</a>
     </div>
 
     <div class="main-content">
+        <div class="page-header">
+            <h1>لوحة التحكم | إضافة منتج أو خدمة</h1>
+            <p style="color: #6c757d;">قم بإضافة تفاصيل المنتج واختيار القسم المناسب</p>
+        </div>
+
+        <div class="tabs-nav" id="categoryTabs">
+            <button class="tab-btn active" data-cat="Mobiles"><i class="fas fa-mobile-alt"></i> موبايلات</button>
+            <button class="tab-btn" data-cat="Laptops"><i class="fas fa-laptop"></i> لابتوبات</button>
+            <button class="tab-btn" data-cat="Tablets"><i class="fas fa-tablet-alt"></i> تابلت</button>
+            <button class="tab-btn" data-cat="PC"><i class="fas fa-desktop"></i> كمبيوتر</button>
+            <button class="tab-btn" data-cat="Accessories"><i class="fas fa-headphones"></i> إكسسوارات</button>
+            <button class="tab-btn" data-cat="Services"><i class="fas fa-tools"></i> خدمات صيانة</button>
+        </div>
+
         <div class="card">
-            <h2>إضافة منتج جديد للمتجر</h2>
-            <br>
             <div id="status" class="status-msg"></div>
 
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label>اسم المنتج</label>
-                <input type="text" id="prodName" placeholder="مثلاً: HP Victus 15 Gaming Laptop">
-            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>اسم المنتج / الخدمة</label>
+                    <input type="text" id="itemName" placeholder="مثال: iPhone 15 Pro Max">
+                </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>السعر الحالي (بعد الخصم)</label>
-                    <input type="number" id="prodPrice" placeholder="35000">
-                </div>
-                <div class="form-group">
-                    <label>السعر القديم (قبل الخصم) - اختياري</label>
-                    <input type="number" id="prodOldPrice" placeholder="40000">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>القسم الرئيسي</label>
-                    <select id="prodCategory">
-                        <option value="Laptops">لابتوبات</option>
-                        <option value="PC">كمبيوتر وتجميعات</option>
-                        <option value="Mobiles">موبايلات</option>
-                        <option value="Accessories">إكسسوارات</option>
-                        <option value="Gaming">Gaming Zone</option>
-                    </select>
-                </div>
                 <div class="form-group">
                     <label>الماركة (Brand)</label>
-                    <input type="text" id="prodBrand" placeholder="مثال: Apple, HP, Samsung">
+                    <input type="text" id="itemBrand" placeholder="مثال: Apple, HP, Samsung">
+                </div>
+
+                <div class="form-group">
+                    <label>السعر الحالي (ج.م)</label>
+                    <input type="number" id="itemPrice" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label>السعر قبل الخصم (اختياري)</label>
+                    <input type="number" id="itemOldPrice" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label>حالة التوفر</label>
+                    <select id="itemStock">
+                        <option value="available">متوفر في المخزن</option>
+                        <option value="out">غير متوفر حالياً</option>
+                        <option value="order">طلب مسبق</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>الضمان</label>
+                    <input type="text" id="itemWarranty" placeholder="مثال: ضمان سنة دولي">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>وصف المنتج بالتفصيل</label>
+                    <textarea id="itemDesc" rows="4" placeholder="اكتب مواصفات المنتج ومميزاته هنا..."></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>صورة المنتج</label>
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>اضغط هنا لرفع صورة من جهازك</p>
+                        <input type="file" id="fileInput" hidden accept="image/*">
+                        <img id="imagePreview" alt="معاينة">
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label>رابط صورة المنتج (URL)</label>
-                <input type="text" id="prodImage" placeholder="https://...">
-            </div>
-
-            <button class="btn-add" id="saveBtn"><i class="fas fa-rocket"></i> نشر المنتج</button>
+            <button class="btn-publish" id="publishBtn">
+                <i class="fas fa-paper-plane"></i> نشر المحتوى الآن
+            </button>
         </div>
     </div>
 
@@ -87,67 +139,98 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // إعدادات فايربيز الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
             authDomain: "clicks-f7ce3.firebaseapp.com",
             projectId: "clicks-f7ce3",
             storageBucket: "clicks-f7ce3.firebasestorage.app",
             messagingSenderId: "628318172493",
-            appId: "1:628318172493:web:e5437bde78399b6fbaf304",
-            measurementId: "G-L7Q6Q16ZH4"
+            appId: "1:628318172493:web:e5437bde78399b6fbaf304"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const saveBtn = document.getElementById('saveBtn');
-        const status = document.getElementById('status');
+        let selectedCategory = "Mobiles";
+        let base64Image = "";
 
-        saveBtn.addEventListener('click', async () => {
-            const name = document.getElementById('prodName').value;
-            const price = document.getElementById('prodPrice').value;
-            const oldPrice = document.getElementById('prodOldPrice').value;
-            const category = document.getElementById('prodCategory').value;
-            const brand = document.getElementById('prodBrand').value;
-            const image = document.getElementById('prodImage').value;
+        // التعامل مع التبويبات
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.tab-btn.active').classList.remove('active');
+                btn.classList.add('active');
+                selectedCategory = btn.getAttribute('data-cat');
+            });
+        });
 
-            if(!name || !price || !image || !brand) {
-                alert("برجاء ملء البيانات الأساسية (الاسم، السعر، الصورة، الماركة)");
+        // التعامل مع رفع الصور ومعاينتها
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    base64Image = event.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = base64Image;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // وظيفة النشر
+        document.getElementById('publishBtn').addEventListener('click', async () => {
+            const name = document.getElementById('itemName').value;
+            const price = document.getElementById('itemPrice').value;
+            const brand = document.getElementById('itemBrand').value;
+            const desc = document.getElementById('itemDesc').value;
+
+            if(!name || !price || !base64Image) {
+                alert("برجاء إدخال البيانات الأساسية (الاسم، السعر، والصورة)");
                 return;
             }
 
-            saveBtn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> جاري الحفظ...";
-            saveBtn.disabled = true;
+            const btn = document.getElementById('publishBtn');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> جاري النشر...";
 
             try {
                 await addDoc(collection(db, "products"), {
                     name: name,
                     price: Number(price),
-                    oldPrice: oldPrice ? Number(oldPrice) : null,
-                    category: category,
+                    oldPrice: document.getElementById('itemOldPrice').value ? Number(document.getElementById('itemOldPrice').value) : null,
+                    category: selectedCategory,
                     brand: brand,
-                    image: image,
+                    stock: document.getElementById('itemStock').value,
+                    warranty: document.getElementById('itemWarranty').value,
+                    description: desc,
+                    image: base64Image, // يتم حفظ الصورة كـ Base64
                     createdAt: new Date()
                 });
 
                 status.style.display = "block";
                 status.style.backgroundColor = "#d4edda";
                 status.style.color = "#155724";
-                status.innerText = "تمت إضافة المنتج بنجاح! 🚀";
+                status.innerHTML = "تم نشر " + name + " بنجاح في قسم " + selectedCategory;
                 
-                // مسح الخانات
-                document.querySelectorAll('input').forEach(input => input.value = '');
-                
-            } catch (e) {
-                console.error("Error: ", e);
+                // إعادة تعيين الفورم
+                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                document.getElementById('imagePreview').style.display = 'none';
+                base64Image = "";
+
+            } catch (error) {
+                console.error(error);
                 status.style.display = "block";
                 status.style.backgroundColor = "#f8d7da";
                 status.style.color = "#721c24";
-                status.innerText = "حدث خطأ أثناء الحفظ.";
+                status.innerText = "فشل النشر، يرجى المحاولة لاحقاً.";
             } finally {
-                saveBtn.innerHTML = "<i class='fas fa-rocket'></i> نشر المنتج";
-                saveBtn.disabled = false;
-                setTimeout(() => status.style.display = "none", 4000);
+                btn.disabled = false;
+                btn.innerHTML = "<i class='fas fa-paper-plane'></i> نشر المحتوى الآن";
+                setTimeout(() => status.style.display = "none", 5000);
             }
         });
     </script>
