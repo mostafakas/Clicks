@@ -19,6 +19,79 @@
         
         /* تأثير عند الضغط على الأقسام */
         .cat-box.active, .categories ul li a.active { color: #007bff; border-color: #007bff; font-weight: bold; }
+        /* تنسيق نافذة السلة (Pop-up) */
+        .cart-modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); /* خلفية سوداء شفافة */
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        .modal-content { 
+            background: white; 
+            width: 90%; 
+            max-width: 500px; 
+            max-height: 85vh; 
+            overflow-y: auto; 
+            border-radius: 15px; 
+            padding: 25px; 
+            position: relative; 
+        }
+        
+        .close-modal { 
+            position: absolute; 
+            left: 20px; 
+            top: 15px; 
+            font-size: 28px; 
+            cursor: pointer; 
+            color: #666; 
+        }
+        
+        .cart-item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 12px 0; 
+            border-bottom: 1px solid #eee; 
+        }
+        
+        .total-price { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #007bff; 
+            margin: 20px 0; 
+            text-align: center;
+        }
+        
+        .checkout-form input, .checkout-form select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-family: 'Cairo', sans-serif; 
+        }
+        
+        .btn-whatsapp { 
+            width: 100%; 
+            padding: 15px; 
+            background: #25d366; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+        }
     </style>
 </head>
 <body>
@@ -43,7 +116,9 @@
         </div>
         <div class="user-actions">
             <a href="#" id="favBtn"><i class="fas fa-heart"></i> المفضلة <span class="badge" id="favCount">0</span></a>
-            <a href="#" class="cart" id="cartBtn"><i class="fas fa-shopping-cart"></i> السلة <span class="badge" id="cartCount">0</span></a>
+            <a href="javascript:void(0)" class="cart" id="cartBtn" onclick="toggleCartModal(true)">
+                <i class="fas fa-shopping-cart"></i> السلة <span class="badge" id="cartCount">0</span>
+            </a>
         </div>
     </header>
 
@@ -195,19 +270,21 @@
         }
 
         // معالجة الأزرار (السلة والمفضلة)
-        window.handleAction = (type, id, name) => {
+       // تعديل وظيفة الإضافة عشان تخزن السعر كمان
+        window.handleAction = (type, id, name, price) => {
             if (type === 'cart') {
-                cart.push({id, name});
+                cart.push({id, name, price}); // بنخزن الاسم والسعر
                 localStorage.setItem('cart', JSON.stringify(cart));
                 alert(`تم إضافة ${name} للسلة`);
-            } else {
-                if (!favorites.includes(id)) {
-                    favorites.push(id);
-                    localStorage.setItem('favorites', JSON.stringify(favorites));
-                    alert(`تم إضافة ${name} للمفضلة`);
-                }
+                updateCounters();
             }
-            updateCounters();
+        };
+        
+        // وظيفة فتح وإغلاق النافذة
+        window.toggleCartModal = (show) => {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = show ? 'flex' : 'none';
+            if(show) renderCartItems(); // لو فتحنا السلة، اعرض المنتجات اللي جواها
         };
 
         // تفعيل أزرار التبويبات والأقسام السريعة
@@ -232,9 +309,115 @@
             document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
         };
 
-        // تشغيل التحميل الأولي
+        // ءتشغيل التحميل الأولي
         loadProducts("all");
-    </script>
+        // وظيفة عرض المنتجات جوه النافذة وحساب الإجمالي
+window.renderCartItems = () => {
+    const container = document.getElementById('cartItemsContainer');
+    const totalDiv = document.getElementById('cartTotalDisplay');
+    const form = document.getElementById('checkoutForm');
+    
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">السلة فارغة حالياً.</p>';
+        totalDiv.innerText = '';
+        form.style.display = 'none';
+        return;
+    }
 
+    form.style.display = 'block';
+    let html = '';
+    let total = 0;
+    
+    cart.forEach((item, index) => {
+        html += `
+            <div class="cart-item">
+                <span>${item.name}</span>
+                <span>${Number(item.price).toLocaleString()} ج.م 
+                    <i class="fas fa-trash" style="color:red; cursor:pointer; margin-right:10px;" onclick="removeItem(${index})"></i>
+                </span>
+            </div>`;
+        total += Number(item.price);
+    });
+    
+    container.innerHTML = html;
+    totalDiv.innerText = `الإجمالي: ${total.toLocaleString()} ج.م`;
+};
+
+// وظيفة حذف منتج من السلة
+window.removeItem = (index) => {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCounters();
+    renderCartItems();
+};
+        window.sendOrderToWhatsApp = () => {
+    // 1. جمع بيانات العميل من الفورم
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custPhone').value;
+    const address = document.getElementById('custAddress').value;
+    const payment = document.getElementById('paymentMethod').value;
+    const whatsappNumber = "201061890015"; // رقم الواتساب الخاص بك
+
+    // 2. التأكد إن العميل ملا البيانات
+    if(!name || !phone || !address) {
+        alert("يا فندم، برجاء كتابة الاسم والموبايل والعنوان عشان نقدر نوصلك الطلب");
+        return;
+    }
+
+    // 3. تجهيز قائمة المنتجات وحساب الإجمالي
+    let productsText = "";
+    let total = 0;
+    cart.forEach((item, i) => {
+        productsText += `${i+1}- ${item.name} (${Number(item.price).toLocaleString()} ج.م)%0A`;
+        total += Number(item.price);
+    });
+
+    // 4. تنسيق الرسالة النهائية
+    const message = `*طلب جديد من متجر Clicks*%0A` +
+                    `--------------------------%0A` +
+                    `*المنتجات:*%0A${productsText}` +
+                    `--------------------------%0A` +
+                    `*الإجمالي:* ${total.toLocaleString()} ج.م%0A` +
+                    `--------------------------%0A` +
+                    `*بيانات العميل:*%0A` +
+                    `- الاسم: ${name}%0A` +
+                    `- الموبايل: ${phone}%0A` +
+                    `- العنوان: ${address}%0A` +
+                    `- وسيلة الدفع: ${payment}%0A%0A` +
+                    `تم الإرسال من موقع Clicks.`;
+
+    // 5. فتح رابط الواتساب
+    const fullUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+    window.open(fullUrl, '_blank');
+};
+    </script>
+            <div class="cart-modal" id="cartModal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal" onclick="toggleCartModal(false)">&times;</span>
+                <h3 class="modal-title">سلة المشتريات</h3>
+                
+                <div id="cartItemsContainer" class="cart-items-list"></div>
+        
+                <div id="cartTotalDisplay" class="total-price"></div>
+        
+                <div class="checkout-form" id="checkoutForm">
+                    <h4>بيانات العميل</h4>
+                    <input type="text" id="custName" placeholder="الاسم الكامل">
+                    <input type="tel" id="custPhone" placeholder="رقم الموبايل">
+                    <input type="text" id="custAddress" placeholder="العنوان بالتفصيل">
+                    
+                    <h4>وسيلة الدفع</h4>
+                    <select id="paymentMethod">
+                        <option value="الدفع عند الاستلام">كاش (عند الاستلام)</option>
+                        <option value="فودافون كاش">فودافون كاش</option>
+                        <option value="تحويل بنكي">تحويل بنكي</option>
+                    </select>
+        
+                    <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> إرسال الطلب عبر واتساب
+                    </button>
+                </div>
+            </div>
+        </div>
 </body>
 </html>
