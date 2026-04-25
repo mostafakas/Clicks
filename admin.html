@@ -17,6 +17,18 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background-color: #f1f5f9; display: flex; color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
+        /* شاشة تسجيل الدخول */
+        #loginOverlay { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .login-box { background: var(--white); padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .login-box h2 { color: var(--primary); margin-bottom: 10px; font-weight: 800; font-size: 28px; }
+        .login-box p { color: var(--text-muted); margin-bottom: 25px; font-weight: 600; }
+        .login-box input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; font-family: 'Cairo'; font-weight: 700; text-align: center; font-size: 18px; transition: 0.3s; }
+        .login-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .login-box button { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .login-box button:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        #loginError { color: var(--danger); font-weight: 700; margin-top: 15px; display: none; font-size: 14px; background: #fef2f2; padding: 10px; border-radius: 8px; }
+
         /* Sidebar */
         .sidebar { width: 280px; background: var(--dark); color: var(--white); position: fixed; right: 0; top: 0; height: 100vh; z-index: 1000; box-shadow: -4px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar-brand { padding: 30px 20px; text-align: center; font-size: 32px; font-weight: 800; color: var(--primary); background: var(--darker); border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -34,7 +46,7 @@
         /* Top Header */
         .top-header { background: var(--white); height: 80px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); position: sticky; top: 0; z-index: 99; }
         .header-title { font-size: 22px; font-weight: 800; color: var(--dark); }
-        .header-user { display: flex; align-items: center; gap: 15px; font-weight: 700; color: var(--text-main); }
+        .header-user { display: flex; align-items: center; gap: 15px; font-weight: 700; color: var(--text-main); cursor: pointer; }
         .header-user img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #e2e8f0; }
 
         /* Content Area */
@@ -117,6 +129,17 @@
 </head>
 <body>
 
+    <div id="loginOverlay">
+        <div class="login-box">
+            <i class="fas fa-lock" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+            <h2>تسجيل الدخول</h2>
+            <p>مرحباً بك في لوحة تحكم Clicks Pro</p>
+            <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" onkeypress="handleLoginKey(event)">
+            <button onclick="checkAdminPassword()">تسجيل الدخول <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i></button>
+            <p id="loginError"><i class="fas fa-exclamation-circle"></i> كلمة المرور غير صحيحة، حاول مجدداً</p>
+        </div>
+    </div>
+
     <div class="sidebar">
         <div class="sidebar-brand">Cli<span>cks</span> Pro</div>
         <div class="sidebar-menu">
@@ -127,6 +150,7 @@
             <a href="#" onclick="switchTab('warehouse', this)"><i class="fas fa-warehouse"></i> جرد المخزن</a>
         </div>
         <div class="sidebar-footer">
+            <a href="javascript:void(0)" onclick="logoutAdmin()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); margin-bottom: 15px;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
             <a href="index.html" style="background: rgba(255,255,255,0.05); justify-content: center;"><i class="fas fa-external-link-alt"></i> زيارة المتجر</a>
         </div>
     </div>
@@ -350,6 +374,37 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ================= نظام تسجيل الدخول (تشفير وإخفاء الباسوورد) =================
+        // كلمة السر مشفرة بـ Base64 مقلوب لزيادة التعمية
+        const SECRET = "OTlAYWZhdHN1TQ=="; // تشفير كلمة "Mustafa@99"
+
+        window.checkAdminPassword = () => {
+            const input = document.getElementById('adminPassword').value;
+            // التحقق من المطابقة بعد التشفير
+            const reversed = input.split('').reverse().join('');
+            if (btoa(reversed) === SECRET) {
+                sessionStorage.setItem('clicksAdminAuth', 'true');
+                document.getElementById('loginOverlay').style.display = 'none';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        };
+
+        window.handleLoginKey = (e) => {
+            if(e.key === 'Enter') checkAdminPassword();
+        };
+
+        // التحقق عند تحميل الصفحة
+        if (sessionStorage.getItem('clicksAdminAuth') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        window.logoutAdmin = () => {
+            sessionStorage.removeItem('clicksAdminAuth');
+            location.reload();
+        };
+        // =====================================================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
