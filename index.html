@@ -30,9 +30,9 @@
             <button><i class="fas fa-search"></i></button>
         </div>
         <div class="user-actions">
-            <a href="#"><i class="fas fa-user"></i> حسابي</a>
+            <a href="admin.html" style="color: #ffc107;"><i class="fas fa-shield-alt"></i> الإدارة</a>
             <a href="#"><i class="fas fa-heart"></i> المفضلة</a>
-            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge">0</span></a>
+            <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> السلة <span class="badge" id="cartCount">0</span></a>
         </div>
     </header>
 
@@ -43,9 +43,9 @@
                 <div class="mega-menu">
                     <div class="mega-column">
                         <h4>حسب الاستخدام</h4>
-                        <a href="#">Gaming</a>
-                        <a href="#">Business</a>
-                        <a href="#">Student</a>
+                        <a href="#">Gaming (ألعاب)</a>
+                        <a href="#">Business (أعمال)</a>
+                        <a href="#">Student (طلاب)</a>
                     </div>
                     <div class="mega-column">
                         <h4>حسب الماركة</h4>
@@ -84,26 +84,14 @@
 
     <section class="products-section">
         <div class="section-header">
-            <h3 class="section-title">أفضل العروض</h3>
+            <h3 class="section-title">أحدث العروض والمنتجات</h3>
             <a href="#" class="view-all">عرض الكل <i class="fas fa-arrow-left"></i></a>
         </div>
+        
         <div class="products-grid" id="productsGrid">
-            <div class="product-card">
-                <div class="discount-badge">-12%</div>
-                <img src="https://via.placeholder.com/200" alt="لابتوب جيمنج">
-                <h4>لابتوب جيمنج ASUS ROG Strix</h4>
-                <div class="product-meta">
-                    <span class="brand">ASUS</span>
-                    <div class="stars"><i class="fas fa-star"></i> 4.8</div>
-                </div>
-                <div class="price">
-                    <span class="new-price">35,000 ج.م</span>
-                    <span class="old-price">40,000 ج.م</span>
-                </div>
-                <div class="card-actions">
-                    <button class="add-to-cart"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-                    <button class="add-to-fav"><i class="far fa-heart"></i></button>
-                </div>
+            <div style="text-align: center; width: 100%; grid-column: 1 / -1; color: #777;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p>جاري تحميل المنتجات...</p>
             </div>
         </div>
     </section>
@@ -112,5 +100,86 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    </body>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // بيانات الاتصال الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
+            authDomain: "clicks-f7ce3.firebaseapp.com",
+            projectId: "clicks-f7ce3",
+            storageBucket: "clicks-f7ce3.firebasestorage.app",
+            messagingSenderId: "628318172493",
+            appId: "1:628318172493:web:e5437bde78399b6fbaf304"
+        };
+
+        // تهيئة قاعدة البيانات
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // وظيفة تحديث رقم سلة المشتريات
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        document.getElementById('cartCount').innerText = cart.length;
+
+        // جلب المنتجات من فايربيز وعرضها بنفس التصميم الخاص بك
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = ""; // مسح علامة التحميل
+            
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                
+                // حساب نسبة الخصم إذا كان هناك سعر قديم
+                let discountHtml = '';
+                let oldPriceHtml = '';
+                if (p.oldPrice && p.oldPrice > p.price) {
+                    let discountPercent = Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100);
+                    discountHtml = `<div class="discount-badge">-${discountPercent}%</div>`;
+                    oldPriceHtml = `<span class="old-price">${Number(p.oldPrice).toLocaleString()} ج.م</span>`;
+                }
+
+                // رسم كارت المنتج بنفس تصميمك الأصلي تماماً
+                grid.innerHTML += `
+                    <div class="product-card">
+                        ${discountHtml}
+                        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200'">
+                        <h4>${p.name}</h4>
+                        <div class="product-meta">
+                            <span class="brand">${p.brand || 'عام'}</span>
+                            <div class="stars"><i class="fas fa-star"></i> 4.8</div>
+                        </div>
+                        <div class="price">
+                            <span class="new-price">${Number(p.price).toLocaleString()} ج.م</span>
+                            ${oldPriceHtml}
+                        </div>
+                        <div class="card-actions">
+                            <button class="add-to-cart" onclick="addToCart('${doc.id}', '${p.name}', ${p.price})">
+                                <i class="fas fa-cart-plus"></i> أضف للسلة
+                            </button>
+                            <button class="add-to-fav"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // رسالة في حال لم يكن هناك منتجات
+            if(snapshot.empty) {
+                grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding: 20px;">لا توجد منتجات مضافة حتى الآن.</p>`;
+            }
+        });
+
+        // وظيفة إضافة المنتج للسلة المبدئية
+        window.addToCart = (id, name, price) => {
+            cart.push({id, name, price});
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById('cartCount').innerText = cart.length; // تحديث الرقم في الهيدر
+            
+            // يمكنك تغيير هذه الرسالة لاحقاً لتكون نافذة منبثقة جميلة بدلاً من Alert
+            alert(`تمت إضافة "${name}" إلى السلة بنجاح!`);
+        };
+    </script>
+</body>
 </html>
