@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج | Clicks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div><i class="fas fa-headset"></i> دعم فني: +201061890015</div>
+        <div><a href="https://wa.me/201061890015" target="_blank"><i class="fab fa-whatsapp"></i></a></div>
+    </div>
+
+    <header>
+        <a href="index.html" class="logo">Cli<span>cks</span></a>
+        <div class="header-actions">
+            <button class="cart-btn" onclick="toggleCartModal(true)">
+                <i class="fas fa-shopping-cart"></i> السلة <span id="cartCount" class="cart-badge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="productDetailsContainer" class="product-page">
+        <div style="width: 100%; text-align: center; padding: 50px; font-weight: 700;">جاري تحميل بيانات المنتج...</div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">Cli<span>cks</span></div>
+        <p>© 2026 جميع الحقوق محفوظة لمتجر Clicks</p>
+    </footer>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="toggleCartModal(false)"><i class="fas fa-times"></i></button>
+            <h2>سلة المشتريات</h2>
+            <div id="cartItemsContainer"></div>
+            <div id="cartTotalDisplay" class="cart-total"></div>
+            <div id="checkoutForm" class="checkout-form" style="display:none;">
+                <input type="text" id="custName" placeholder="الاسم بالكامل" required>
+                <input type="tel" id="custPhone" placeholder="رقم الموبايل" required>
+                <select id="deliveryMethod">
+                    <option value="توصيل للعنوان">توصيل للعنوان (تضاف رسوم الشحن)</option>
+                    <option value="استلام من الفرع">استلام من الفرع (مجاناً)</option>
+                </select>
+                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل" required>
+                <select id="paymentMethod">
+                    <option value="الدفع عند الاستلام">الدفع عند الاستلام</option>
+                    <option value="فودافون كاش">تحويل فودافون كاش</option>
+                </select>
+                <div class="checkout-actions">
+                    <button class="btn-primary" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">تأكيد الطلب عبر الموقع</button>
+                    <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">إرسال عبر الواتساب <i class="fab fa-whatsapp"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="product.js"></script>
+</body>
+</html>
