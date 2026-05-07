@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تفاصيل المنتج | Clicks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <a href="javascript:history.back()" class="cart-toggle-btn" style="background:var(--surface); color:var(--text); border:1px solid var(--border);"><i class="fas fa-arrow-right"></i> رجوع</a>
+            <a href="index.html" class="logo">Cli<span>cks</span></a>
+            
+            <div class="header-actions">
+                <button class="cart-toggle-btn" onclick="toggleCartDrawer(true)">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cartCountBadge" class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="productDetailsContainer" class="product-details-page">
+        <div style="width:100%; text-align:center; padding:100px 20px; font-weight:800;">جاري تحميل المنتج...</div>
+    </main>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer(false)"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2><i class="fas fa-shopping-cart"></i> سلة المشتريات</h2>
+            <button class="close-cart" onclick="toggleCartDrawer(false)"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-body" id="cartItemsContainer"></div>
+        <div class="cart-footer">
+            <div class="cart-total-box" id="cartTotalDisplay" style="display:none;">
+                <span>الإجمالي:</span><strong id="cartTotalPrice">0 ج.م</strong>
+            </div>
+            <div id="checkoutForm" class="checkout-form" style="display:none;">
+                <input type="text" id="custName" placeholder="الاسم ثلاثي" required>
+                <input type="tel" id="custPhone" placeholder="رقم الموبايل" required>
+                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل" required>
+                <select id="deliveryMethod"><option value="توصيل للعنوان">توصيل للعنوان</option><option value="استلام من الفرع">استلام من الفرع</option></select>
+                <select id="paymentMethod"><option value="الدفع عند الاستلام">الدفع عند الاستلام</option><option value="فودافون كاش">تحويل فودافون كاش</option></select>
+                <button class="btn-checkout" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">تأكيد الطلب الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="product.js"></script>
+</body>
+</html>
