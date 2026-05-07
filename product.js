@@ -4,58 +4,51 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 const firebaseConfig = {
     apiKey: "AIzaSyD07kWys5dp3f6FJeYblxMcAfQzY94MTtE",
     authDomain: "clicks-f7ce3.firebaseapp.com",
-    projectId: "clicks-f7ce3",
-    storageBucket: "clicks-f7ce3.firebasestorage.app",
-    messagingSenderId: "628318172493",
-    appId: "1:628318172493:web:e5437bde78399b6fbaf304"
+    projectId: "clicks-f7ce3"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// قراءة الـ ID من الرابط الخاص بالصفحة
 const urlParams = new URLSearchParams(window.location.search);
 const productId = urlParams.get('id');
 const container = document.getElementById('productDetailsContainer');
 
 if (!productId) {
-    container.innerHTML = '<div style="width:100%; text-align:center; padding:50px; font-weight:700;">المنتج غير موجود. <a href="index.html" style="color:var(--accent);">العودة للرئيسية</a></div>';
+    container.innerHTML = '<div style="text-align:center; padding:50px; font-weight:800; width:100%;">المنتج غير موجود. <a href="index.html" style="color:var(--accent);">العودة</a></div>';
 } else {
     getDoc(doc(db, "products", productId)).then(docSnap => {
         if (docSnap.exists()) {
             const p = docSnap.data();
             document.title = `${p.name} | Clicks`;
             
-            const statusHtml = p.qty > 0 ? `<span style="color:var(--success);"><i class="fas fa-check-circle"></i> متوفر</span>` : `<span style="color:var(--danger);"><i class="fas fa-times-circle"></i> غير متوفر</span>`;
-            const btnState = p.qty <= 0 ? 'disabled style="background:var(--text-light); cursor:not-allowed;"' : '';
-            const oldPriceHtml = p.oldPrice ? `<span class="pd-old-price">${p.oldPrice.toLocaleString()} ج.م</span>` : '';
+            const btnState = p.qty <= 0 ? 'disabled style="background:var(--text-light);"' : '';
 
             container.innerHTML = `
                 <div class="product-gallery">
                     <img src="${p.image}" alt="${p.name}">
                 </div>
                 <div class="product-details">
-                    <div class="pd-brand">${p.brand || 'Clicks'}</div>
-                    <h1 class="pd-title">${p.name}</h1>
-                    <div class="pd-price">${p.price.toLocaleString()} ج.م ${oldPriceHtml}</div>
+                    <h1>${p.name}</h1>
+                    <div class="pd-price">${p.price.toLocaleString()} ج.م</div>
                     
                     <div class="pd-specs">
-                        <div class="spec-box"><div class="spec-label">الموديل (SKU)</div><div class="spec-val">${p.sku || 'غير محدد'}</div></div>
-                        <div class="spec-box"><div class="spec-label">الحالة</div><div class="spec-val">${p.condition || 'جديد'}</div></div>
-                        <div class="spec-box"><div class="spec-label">الضمان</div><div class="spec-val">${p.warranty || 'بدون ضمان'}</div></div>
-                        <div class="spec-box"><div class="spec-label">التوفر</div><div class="spec-val">${statusHtml}</div></div>
+                        <div class="spec-item"><span class="spec-label">الموديل (SKU)</span><span>${p.sku || 'غير محدد'}</span></div>
+                        <div class="spec-item"><span class="spec-label">الحالة</span><span>${p.condition || 'جديد'}</span></div>
+                        <div class="spec-item"><span class="spec-label">الضمان</span><span>${p.warranty || 'بدون'}</span></div>
                     </div>
                     
-                    <div class="pd-desc">${p.description || 'لا يوجد وصف تفصيلي متاح حالياً.'}</div>
-                    
-                    <button class="pd-btn" onclick="window.addToCart('${docSnap.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" ${btnState}>
-                        <i class="fas fa-shopping-bag"></i> ${p.qty > 0 ? 'إضافة إلى السلة' : 'نفذت الكمية'}
-                    </button>
+                    <div class="pd-controls">
+                        <div class="qty-selector">
+                            <button class="qty-btn" onclick="changeLocalQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" value="1" min="1" readonly>
+                            <button class="qty-btn" onclick="changeLocalQty(this, 1)">+</button>
+                        </div>
+                        <button class="add-btn" onclick="addToCartAnimated(event, '${docSnap.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" ${btnState}>
+                            ${p.qty > 0 ? 'إضافة إلى السلة <i class="fas fa-shopping-bag"></i>' : 'نفذت الكمية'}
+                        </button>
+                    </div>
                 </div>`;
-        } else {
-            container.innerHTML = '<div style="width:100%; text-align:center; padding:50px; font-weight:700;">عذراً، هذا المنتج غير موجود بقاعدة البيانات.</div>';
         }
-    }).catch(err => {
-        container.innerHTML = '<div style="width:100%; text-align:center; padding:50px; font-weight:700; color:var(--danger);">حدث خطأ أثناء تحميل البيانات من الخادم.</div>';
     });
 }
