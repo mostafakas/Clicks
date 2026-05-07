@@ -2,42 +2,48 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تفاصيل المنتج | Clicks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="top-bar">
-        <div><i class="fas fa-headset"></i> دعم فني: +201061890015</div>
-        <div><a href="https://wa.me/201061890015" target="_blank"><i class="fab fa-whatsapp"></i></a></div>
-    </div>
-
-    <header>
+    <header class="main-header">
+        <a href="javascript:history.back()" class="icon-btn"><i class="fas fa-arrow-right"></i></a>
         <a href="index.html" class="logo">Cli<span>cks</span></a>
+        
         <div class="header-actions">
             <button class="cart-btn" onclick="toggleCartModal(true)">
-                <i class="fas fa-shopping-cart"></i> السلة <span id="cartCount" class="cart-badge">0</span>
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" class="cart-badge">0</span>
             </button>
         </div>
     </header>
 
     <main id="productDetailsContainer" class="product-page">
-        <div style="width: 100%; text-align: center; padding: 50px; font-weight: 700;">جاري تحميل بيانات المنتج...</div>
+        <div style="text-align:center; padding:50px; font-weight:800; width:100%;">جاري تحميل البيانات...</div>
     </main>
 
-    <footer>
-        <div class="footer-logo">Cli<span>cks</span></div>
-        <p>© 2026 جميع الحقوق محفوظة لمتجر Clicks</p>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo">Cli<span>cks</span></div>
+            <p class="footer-address"><i class="fas fa-map-marker-alt"></i> مدينة قليوب، القليوبية</p>
+            <div class="footer-contact">
+                <a href="tel:+201061890015"><i class="fas fa-phone"></i> +201061890015</a>
+                <a href="https://wa.me/201061890015"><i class="fab fa-whatsapp"></i> تواصل واتساب</a>
+            </div>
+        </div>
     </footer>
 
     <div class="modal" id="cartModal">
-        <div class="modal-content">
+        <div class="modal-content cart-modal-content">
             <button class="close-btn" onclick="toggleCartModal(false)"><i class="fas fa-times"></i></button>
-            <h2>سلة المشتريات</h2>
+            <h2 class="modal-title">سلة المشتريات</h2>
             <div id="cartItemsContainer"></div>
             <div id="cartTotalDisplay" class="cart-total"></div>
+            
             <div id="checkoutForm" class="checkout-form" style="display:none;">
+                <h3 class="checkout-title">بيانات الاستلام</h3>
                 <input type="text" id="custName" placeholder="الاسم بالكامل" required>
                 <input type="tel" id="custPhone" placeholder="رقم الموبايل" required>
                 <select id="deliveryMethod">
@@ -49,13 +55,14 @@
                     <option value="الدفع عند الاستلام">الدفع عند الاستلام</option>
                     <option value="فودافون كاش">تحويل فودافون كاش</option>
                 </select>
-                <div class="checkout-actions">
-                    <button class="btn-primary" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">تأكيد الطلب عبر الموقع</button>
-                    <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">إرسال عبر الواتساب <i class="fab fa-whatsapp"></i></button>
-                </div>
+                <button class="btn-primary checkout-btn" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">
+                    <i class="fas fa-check-circle"></i> تأكيد الطلب
+                </button>
             </div>
         </div>
     </div>
+
+    <img id="flying-item" class="flying-item" src="" alt="flying">
 
     <script type="module" src="script.js"></script>
     <script type="module" src="product.js"></script>
