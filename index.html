@@ -2,77 +2,102 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clicks | المتجر</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clicks Pro | عالم الإلكترونيات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="top-bar">
-        <div><i class="fas fa-headset"></i> دعم فني: +201061890015 | <i class="fas fa-envelope"></i> mostafakapeel@gmail.com</div>
-        <div>
-            <a href="https://wa.me/201061890015" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        </div>
-    </div>
 
-    <header>
-        <a href="index.html" class="logo">Cli<span>cks</span></a>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="ابحث عن الموبايلات، اللابتوبات...">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <div class="header-actions">
-            <button class="cart-btn" onclick="toggleCartModal(true)">
-                <i class="fas fa-shopping-cart"></i> السلة <span id="cartCount" class="cart-badge">0</span>
-            </button>
+    <header class="main-header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Cli<span>cks</span></a>
+            
+            <div class="search-bar-wrapper">
+                <input type="text" id="mainSearchInput" placeholder="بحث عن منتج...">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div class="nav-actions">
+                <a href="tel:+201061890015" class="nav-icon"><i class="fas fa-phone-alt"></i></a>
+                <button class="cart-trigger" onclick="toggleCart(true)">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cartBadge" class="badge">0</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>أحدث التقنيات بين يديك</h1>
-            <p>تسوق أفضل اللابتوبات والموبايلات بأسعار تنافسية</p>
-            <button onclick="document.getElementById('storeContainer').scrollIntoView({behavior: 'smooth'})">تسوق الآن</button>
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-inner">
+            <div class="hero-text">
+                <span class="tagline">الآن في قليوب</span>
+                <h1>ارتقِ بتجربتك <span>الرقمية</span></h1>
+                <p>متجر Clicks يوفر لك أحدث الأجهزة العالمية بأسعار محلية منافسة وضمان حقيقي.</p>
+                <div class="hero-btns">
+                    <button class="btn-main" onclick="document.getElementById('store').scrollIntoView({behavior:'smooth'})">ابدأ التسوق</button>
+                    <a href="https://wa.me/201061890015" class="btn-sub">تواصل معنا</a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <nav class="categories-nav" id="filterNav">
-        <button class="cat-btn active" data-filter="all">الكل</button>
-        <button class="cat-btn" data-filter="Mobiles">موبايلات</button>
-        <button class="cat-btn" data-filter="Laptops">لابتوبات</button>
-        <button class="cat-btn" data-filter="PC">كمبيوترات و PC</button>
-        <button class="cat-btn" data-filter="Accessories">إكسسوارات وقطع غيار</button>
-        <button class="cat-btn" data-filter="Services">صيانة</button>
+    <nav class="category-nav">
+        <div class="cat-list" id="catFilter">
+            <button class="cat-item active" data-filter="all">الكل</button>
+            <button class="cat-item" data-filter="Mobiles">موبايلات</button>
+            <button class="cat-item" data-filter="Laptops">لابتوبات</button>
+            <button class="cat-item" data-filter="PC">كمبيوتر</button>
+            <button class="cat-item" data-filter="Accessories">إكسسوارات</button>
+        </div>
     </nav>
 
-    <main id="storeContainer" class="store-container"></main>
+    <main id="store" class="store-main">
+        <div id="productsGrid" class="products-grid">
+            </div>
+    </main>
 
-    <footer>
-        <div class="footer-logo">Cli<span>cks</span></div>
-        <p>© 2026 جميع الحقوق محفوظة لمتجر Clicks</p>
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">Cli<span>cks</span></div>
+                <p>وجهتك الأولى لأحدث تقنيات اللابتوب والموبايل في محافظة القليوبية.</p>
+            </div>
+            <div class="footer-info">
+                <h3>تواصل معنا</h3>
+                <p><i class="fas fa-map-marker-alt"></i> مدينة قليوب، القليوبية</p>
+                <p><i class="fas fa-phone"></i> +201061890015</p>
+                <p><i class="fab fa-whatsapp"></i> خدمة العملاء عبر الواتساب</p>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2026 جميع الحقوق محفوظة لمتجر Clicks
+        </div>
     </footer>
 
-    <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="toggleCartModal(false)"><i class="fas fa-times"></i></button>
-            <h2>سلة المشتريات</h2>
-            <div id="cartItemsContainer"></div>
-            <div id="cartTotalDisplay" class="cart-total"></div>
-            <div id="checkoutForm" class="checkout-form" style="display:none;">
-                <input type="text" id="custName" placeholder="الاسم بالكامل" required>
-                <input type="tel" id="custPhone" placeholder="رقم الموبايل" required>
-                <select id="deliveryMethod">
-                    <option value="توصيل للعنوان">توصيل للعنوان (تضاف رسوم الشحن)</option>
-                    <option value="استلام من الفرع">استلام من الفرع (مجاناً)</option>
-                </select>
-                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل" required>
-                <select id="paymentMethod">
-                    <option value="الدفع عند الاستلام">الدفع عند الاستلام</option>
-                    <option value="فودافون كاش">تحويل فودافون كاش</option>
-                </select>
-                <div class="checkout-actions">
-                    <button class="btn-primary" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">تأكيد الطلب عبر الموقع</button>
-                    <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">إرسال عبر الواتساب <i class="fab fa-whatsapp"></i></button>
+    <div class="modal-overlay" id="productModalOverlay" onclick="closeProductModal()">
+        <div class="product-modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+            <div id="modalBody" class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <div class="cart-drawer-overlay" id="cartOverlay" onclick="toggleCart(false)">
+        <div class="cart-drawer" onclick="event.stopPropagation()">
+            <div class="cart-head">
+                <h2>سلة المشتريات</h2>
+                <button onclick="toggleCart(false)"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartContent" class="cart-content"></div>
+            <div id="cartFooter" class="cart-footer">
+                <div class="total-price">الإجمالي: <span id="cartTotal">0</span> ج.م</div>
+                <div class="order-form">
+                    <input type="text" id="orderName" placeholder="الاسم بالكامل">
+                    <input type="tel" id="orderPhone" placeholder="رقم الموبايل">
+                    <textarea id="orderAddress" placeholder="العنوان بالتفصيل"></textarea>
+                    <button class="btn-confirm" onclick="confirmOrder()">تأكيد الطلب</button>
                 </div>
             </div>
         </div>
