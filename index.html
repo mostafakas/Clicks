@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="متجر Clicks للإلكترونيات - أفضل عروض اللابتوبات والموبايلات">
+    <meta name="description" content="متجر Clicks للإلكترونيات - أفضل عروض اللابتوبات والموبايلات في مصر">
     <title>Clicks | متجر الإلكترونيات الأول</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
+    <header id="mainHeader">
         <div class="header-right">
             <div class="logo"><h2>Cli<span>cks</span></h2></div>
             <div class="header-contact">
-                <a href="https://wa.me/201061890015" target="_blank" class="head-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
-                <a href="tel:+201061890015" class="head-icon phone"><i class="fas fa-phone-alt"></i></a>
+                <a href="https://wa.me/201061890015" target="_blank" class="head-icon whatsapp" title="تواصل عبر واتساب"><i class="fab fa-whatsapp"></i></a>
+                <a href="tel:+201061890015" class="head-icon phone" title="اتصال هاتفي"><i class="fas fa-phone-alt"></i></a>
             </div>
         </div>
+        
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="ابحث عن موبايل، لابتوب...">
-            <button><i class="fas fa-search"></i></button>
+            <input type="text" id="searchInput" placeholder="ابحث عن موبايل، لابتوب، أو أي منتج آخر...">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
         </div>
+        
         <div class="user-actions">
-            <a href="javascript:void(0)" onclick="toggleCartModal(true)">
-                <i class="fas fa-shopping-bag"></i> <span class="hide-mobile">السلة</span> <span class="badge" id="cartCount">0</span>
+            <a href="javascript:void(0)" onclick="toggleCartModal(true)" class="cart-btn-header">
+                <i class="fas fa-shopping-bag"></i> 
+                <span class="hide-mobile">السلة</span> 
+                <span class="badge" id="cartCount">0</span>
             </a>
         </div>
     </header>
@@ -33,9 +37,9 @@
     <section class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">أحدث التقنيات بأسعار لا تقبل المنافسة</h1>
-            <p class="hero-subtitle">متجر Clicks يقدم لك أفضل اللابتوبات والموبايلات بضمان حقيقي وتوصيل سريع. اختر الآن وتمتع بعروضنا الحصرية.</p>
+            <p class="hero-subtitle">متجر Clicks يقدم لك أفضل اللابتوبات والموبايلات بضمان حقيقي وتوصيل سريع لباب منزلك. اختر الآن وتمتع بعروضنا الحصرية.</p>
             <button class="hero-btn" onclick="document.getElementById('productsSection').scrollIntoView({behavior: 'smooth'})">
-                تسوق الآن <i class="fas fa-arrow-left"></i>
+                تسوق جميع المنتجات <i class="fas fa-arrow-left"></i>
             </button>
         </div>
     </section>
@@ -50,61 +54,76 @@
     </nav>
 
     <section class="products-section" id="productsSection">
-        <div id="loadingState" style="text-align:center; padding: 40px; color: var(--primary);">
+        <div id="loadingState" class="loading-container">
             <i class="fas fa-circle-notch fa-spin fa-3x"></i>
-            <h3 style="margin-top: 15px;">جاري تحميل المنتجات...</h3>
+            <h3 style="margin-top: 15px;">جاري تحميل أحدث المنتجات...</h3>
         </div>
-        <div id="storeContent">
-            </div>
+        
+        <div id="storeContent"></div>
+        
+        <div id="noResults" style="display:none; text-align:center; padding:50px 20px; color:#64748b;">
+            <i class="fas fa-search-minus fa-4x" style="margin-bottom:20px; color:#cbd5e1;"></i>
+            <h2 style="font-weight:800;">عذراً، لم نجد نتائج مطابقة لبحثك</h2>
+            <p style="font-size:16px;">حاول استخدام كلمات بحث مختلفة أو تصفح الأقسام.</p>
+        </div>
     </section>
 
     <footer>
         <div class="footer-content">
             <div class="footer-logo"><h2>Cli<span>cks</span></h2></div>
             <div class="footer-social">
-                <a href="https://wa.me/201061890015" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                <a href="https://www.facebook.com/laptopsphonestablets" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://wa.me/201061890015" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.facebook.com/laptopsphonestablets" target="_blank" title="فيسبوك"><i class="fab fa-facebook-f"></i></a>
             </div>
         </div>
-        <p class="copyright">© 2026 متجر Clicks. جميع الحقوق محفوظة.</p>
+        <p class="copyright">© 2026 متجر Clicks. جميع الحقوق محفوظة. تطوير وبرمجة احترافية.</p>
     </footer>
 
+    <div id="toastContainer"></div>
+
     <div class="modal" id="productDetailsModal">
-        <div class="modal-content">
+        <div class="modal-content product-modal-content">
             <span class="close-modal" onclick="closeDetailsModal()"><i class="fas fa-times"></i></span>
-            <div class="details-layout" id="detailsContainer"></div>
+            <div class="details-layout" id="detailsContainer">
+                </div>
         </div>
     </div>
 
     <div class="modal" id="cartModal">
         <div class="modal-content cart-modal-content">
             <span class="close-modal" onclick="toggleCartModal(false)"><i class="fas fa-times"></i></span>
-            <h3 class="cart-title">🛒 إتمام الطلب</h3>
+            <h3 class="cart-title"><i class="fas fa-shopping-cart text-primary"></i> إتمام الطلب</h3>
             
             <div id="cartItemsContainer"></div>
             <div id="cartTotalDisplay" class="cart-total-container" style="display:none;"></div>
 
             <div class="checkout-form" id="checkoutForm" style="display:none;">
+                <h4 style="margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; color: var(--dark);">بيانات التوصيل والتواصل:</h4>
                 <label>الاسم بالكامل</label>
                 <input type="text" id="custName" placeholder="أدخل اسمك الثلاثي" required>
+                
                 <label>رقم الموبايل للتواصل</label>
                 <input type="tel" id="custPhone" placeholder="01xxxxxxxxx" required>
+                
                 <label>طريقة الاستلام والتوصيل</label>
                 <select id="deliveryMethod">
                     <option value="توصيل للعنوان">توصيل للعنوان (تُضاف رسوم الشحن)</option>
                     <option value="استلام من الفرع">استلام من الفرع (مجاناً)</option>
                 </select>
+                
                 <label>العنوان بالتفصيل</label>
                 <input type="text" id="custAddress" placeholder="المحافظة، المركز، الشارع، رقم البيت" required>
+                
                 <label>وسيلة الدفع المفضلة</label>
                 <select id="paymentMethod">
                     <option value="الدفع عند الاستلام">الدفع نقداً عند الاستلام</option>
                     <option value="فودافون كاش">تحويل فودافون كاش</option>
                     <option value="تحويل بنكي">تحويل بنكي</option>
                 </select>
+                
                 <div class="action-buttons">
                     <button class="btn-submit btn-website" id="btnWebsiteOrder" onclick="sendOrderToWebsite()">
-                        <i class="fas fa-check-circle"></i> تأكيد الطلب
+                        <i class="fas fa-check-circle"></i> تأكيد الطلب إلكترونياً
                     </button>
                 </div>
             </div>
