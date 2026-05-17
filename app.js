@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // إعدادات Firebase الخاصة بك
 const firebaseConfig = {
@@ -12,7 +12,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
+// تفعيل التخزين الذكي (Cache) ليعمل المتجر بسرعة البرق
+const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
 
 // المتغيرات العامة
 let allProducts = []; 
@@ -35,9 +39,11 @@ window.updateCounters = () => {
 updateCounters();
 
 // 2. تحميل جميع المنتجات وعرضها (لتوفير سرعة خارقة في التصفح)
-async function fetchAndBuildStore() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+// 2. تحميل جميع المنتجات وعرضها بنظام اللقطة الحية السريعة
+function fetchAndBuildStore() {
+    // استخدام onSnapshot لجلب البيانات فوراً من الكاش ثم تحديثها من السيرفر بصمت
+    onSnapshot(collection(db, "products"), (querySnapshot) => {
+        allProducts = []; // تفريغ القائمة لتحديثها بالبيانات الجديدة القادمة من السيرفر
         querySnapshot.forEach((doc) => {
             allProducts.push({ id: doc.id, ...doc.data() });
         });
@@ -45,12 +51,20 @@ async function fetchAndBuildStore() {
         // ترتيب المنتجات من الأحدث للأقدم
         allProducts.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
         
-        document.getElementById('loadingState').style.display = 'none';
+        // إخفاء شاشة التحميل فوراً بمجرد وصول أول بيانات نصية للمنتجات
+        const loadingState = document.getElementById('loadingState');
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
+        
         buildStoreDOM();
-    } catch (error) {
+    }, (error) => {
         console.error("Error fetching products: ", error);
-        document.getElementById('loadingState').innerHTML = `<h3 style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> حدث خطأ في الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.</h3>`;
-    }
+        // لا تظهر رسالة الخطأ إلا إذا كان الموقع فارغاً تماماً ولم يجد أي منتجات بالكاش أو السيرفر
+        if (allProducts.length === 0) {
+            document.getElementById('loadingState').innerHTML = `<h3 style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> حدث خطأ في الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.</h3>`;
+        }
+    });
 }
 
 // 3. بناء هيكل المنتجات في الصفحة الرئيسية
